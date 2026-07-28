@@ -16,6 +16,8 @@ export default function CustomerApp() {
   const [selectedStore, setSelectedStore] = useState(null);
   const [cart, setCart] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [activeCategory, setActiveCategory] = useState('All');
+  const [trackerActiveTab, setTrackerActiveTab] = useState('step');
   
   // Checkout & drawers
   const [checkoutForm, setCheckoutForm] = useState({ name: '', phone: '', address: '', momoProvider: 'MTN MoMo' });
@@ -333,16 +335,7 @@ export default function CustomerApp() {
         ) : (
           <div className="animate-slide">
             {/* Hero Section */}
-            <div style={{
-              background: 'linear-gradient(135deg, #0A0F16 0%, #1A2230 100%)',
-              borderRadius: '24px',
-              padding: '40px 30px',
-              color: 'white',
-              position: 'relative',
-              overflow: 'hidden',
-              marginBottom: '30px',
-              boxShadow: 'var(--shadow-md)'
-            }}>
+            <div className="customer-hero">
               <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '180px', height: '180px', background: 'var(--secondary)', opacity: 0.15, borderRadius: '50%', filter: 'blur(30px)' }}></div>
               <div style={{ position: 'absolute', bottom: '-40px', left: '-40px', width: '120px', height: '120px', background: 'var(--accent)', opacity: 0.1, borderRadius: '50%', filter: 'blur(20px)' }}></div>
 
@@ -410,7 +403,7 @@ export default function CustomerApp() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
                 
                 {/* MALL / STORE / PRODUCT BROWSER */}
-                <section id="mall-selector" style={{ background: 'white', padding: '30px', borderRadius: '24px', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
+                <section id="mall-selector" className="customer-section-card">
                   
                   {/* Browser Header with breadcrumbs */}
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', borderBottom: '1px solid #f1f5f9', paddingBottom: '15px' }}>
@@ -527,8 +520,8 @@ export default function CustomerApp() {
                   {/* Browse State: Shop Products */}
                   {selectedMall && selectedStore && (
                     <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '15px', flexWrap: 'wrap', marginBottom: '25px' }}>
-                        <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '15px', flexWrap: 'wrap', marginBottom: '20px' }}>
+                        <h3 style={{ fontSize: '1.2rem', fontWeight: 800, color: 'var(--primary)' }}>
                           Products at <span style={{ color: 'var(--secondary)' }}>{selectedStore.name}</span>
                         </h3>
                         
@@ -544,13 +537,39 @@ export default function CustomerApp() {
                           />
                         </div>
                       </div>
+
+                      {/* Horizontal Category Pill Chips */}
+                      <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '12px', marginBottom: '20px', borderBottom: '1px solid #f1f5f9' }} className="no-scrollbar">
+                        {['All', ...Object.keys(products)].map(cat => (
+                          <button
+                            key={cat}
+                            onClick={() => setActiveCategory(cat)}
+                            style={{
+                              whiteSpace: 'nowrap',
+                              padding: '8px 16px',
+                              borderRadius: 'var(--radius-full)',
+                              fontSize: '0.75rem',
+                              fontWeight: 700,
+                              border: activeCategory === cat ? 'none' : '1px solid #cbd5e1',
+                              background: activeCategory === cat ? 'var(--secondary)' : 'white',
+                              color: activeCategory === cat ? 'white' : 'var(--text-main)',
+                              cursor: 'pointer',
+                              transition: 'all 0.2s'
+                            }}
+                          >
+                            {cat}
+                          </button>
+                        ))}
+                      </div>
                       
                       {Object.keys(filteredProducts).length === 0 ? (
                         <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
                           No products match your search query. Try another keyword.
                         </div>
                       ) : (
-                        Object.entries(filteredProducts).map(([categoryName, items]) => (
+                        Object.entries(filteredProducts)
+                          .filter(([categoryName]) => activeCategory === 'All' || categoryName === activeCategory)
+                          .map(([categoryName, items]) => (
                           <div key={categoryName} style={{ marginBottom: '30px' }}>
                             <h4 style={{
                               fontSize: '0.85rem',
@@ -618,7 +637,7 @@ export default function CustomerApp() {
                 </section>
 
                 {/* LIVE ORDER TRACKER */}
-                <section style={{ background: 'white', padding: '30px', borderRadius: '24px', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
+                <section className="customer-section-card">
                   <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '10px', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Activity size={20} style={{ color: 'var(--secondary)' }} />
                     Live Order Tracker
@@ -719,85 +738,105 @@ export default function CustomerApp() {
                             </div>
                           )}
 
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: '#f8fafc', padding: '15px', borderRadius: '16px', border: '1px solid var(--border)', fontSize: '0.85rem', marginBottom: '30px' }}>
+                          {/* Tracker Sub-Tabs */}
+                          <div style={{ display: 'flex', borderBottom: '1px solid var(--border)', marginBottom: '20px' }}>
+                            <button
+                              onClick={() => setTrackerActiveTab('step')}
+                              className={`tracker-tab-btn ${trackerActiveTab === 'step' ? 'active' : ''}`}
+                            >
+                              📍 Timeline & Live Alerts
+                            </button>
+                            <button
+                              onClick={() => setTrackerActiveTab('items')}
+                              className={`tracker-tab-btn ${trackerActiveTab === 'items' ? 'active' : ''}`}
+                            >
+                              🧾 Receipt & Checklist
+                            </button>
+                          </div>
+
+                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', background: '#f8fafc', padding: '15px', borderRadius: '16px', border: '1px solid var(--border)', fontSize: '0.85rem', marginBottom: '20px' }}>
                             <div>
                               <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>Staff Assigned</span>
                               <div style={{ marginTop: '5px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                <span>🛒 <strong>Shopper:</strong> {order.shopper || <span style={{ color: 'var(--text-muted)' }}>Waiting for assignment...</span>}</span>
-                                <span>🏍️ <strong>Rider:</strong> {order.rider || <span style={{ color: 'var(--text-muted)' }}>Waiting for dispatch...</span>}</span>
+                                <span>🛒 <strong>Shopper:</strong> {order.shopper || <span style={{ color: 'var(--text-muted)' }}>Waiting...</span>}</span>
+                                <span>🏍️ <strong>Rider:</strong> {order.rider || <span style={{ color: 'var(--text-muted)' }}>Waiting...</span>}</span>
                               </div>
                             </div>
                             <div>
                               <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', textTransform: 'uppercase', fontWeight: 700 }}>Recipient Details</span>
                               <div style={{ marginTop: '5px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                                <span>👤 <strong>Name:</strong> {order.customerName} ({order.phone})</span>
+                                <span>👤 <strong>Name:</strong> {order.customerName}</span>
                                 <span>📍 <strong>Location:</strong> {order.location}</span>
                               </div>
                             </div>
                           </div>
 
-                          <div className="timeline-container">
-                            <div className="timeline-line">
-                              <div className="timeline-line-progress" style={{ '--progress': progressWidth, width: 'var(--progress, 0%)', height: 'var(--progress, 0%)' }}></div>
-                            </div>
-
-                            {stages.map((stage, idx) => {
-                              const isActive = idx === currentStage;
-                              const isCompleted = idx < currentStage;
-                              let statusClass = '';
-                              if (isActive) statusClass = 'active';
-                              if (isCompleted) statusClass = 'completed';
-
-                              return (
-                                <div key={stage.key} className={`timeline-step ${statusClass}`}>
-                                  <div className="timeline-dot">
-                                    {isCompleted ? '✓' : stage.icon}
-                                  </div>
-                                  <span className="timeline-label">{stage.label}</span>
-                                  <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '2px', textAlign: 'center' }}>{stage.desc}</span>
+                          {trackerActiveTab === 'step' ? (
+                            <>
+                              <div className="timeline-container">
+                                <div className="timeline-line">
+                                  <div className="timeline-line-progress" style={{ '--progress': progressWidth, width: 'var(--progress, 0%)', height: 'var(--progress, 0%)' }}></div>
                                 </div>
-                              );
-                            })}
-                          </div>
 
-                          {/* Live Logistics Chat Updates Feed */}
-                          <div style={{ marginTop: '35px', background: '#f8fafc', padding: '20px', borderRadius: '16px', border: '1px solid var(--border)' }}>
-                            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)', display: 'block', marginBottom: '12px', letterSpacing: '0.5px' }}>
-                              ⚡ LIVE LOGISTICS SMS ALERTS
-                            </span>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                              {getRiderUpdateMessage(order.status, order.shopper, order.rider).map((chat, idx) => (
-                                <div key={idx} style={{ background: 'white', border: '1px solid var(--border)', padding: '10px 14px', borderRadius: '12px', fontSize: '0.8rem', animation: 'checkbox-pop 0.3s ease-out' }}>
-                                  <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', marginBottom: '3px', fontSize: '0.68rem', fontWeight: 600 }}>
-                                    <span>MallMart Dispatch Hub</span>
-                                    <span>{chat.time}</span>
-                                  </div>
-                                  <p style={{ margin: 0, color: '#334155', fontWeight: 600, lineHeight: '1.4' }}>{chat.msg}</p>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
+                                {stages.map((stage, idx) => {
+                                  const isActive = idx === currentStage;
+                                  const isCompleted = idx < currentStage;
+                                  let statusClass = '';
+                                  if (isActive) statusClass = 'active';
+                                  if (isCompleted) statusClass = 'completed';
 
-                          <div style={{ marginTop: '30px', border: '1px solid var(--border)', borderRadius: '16px', background: 'white', overflow: 'hidden' }}>
-                            <div style={{ background: '#f8fafc', padding: '12px 18px', borderBottom: '1px solid var(--border)', fontWeight: 700, fontSize: '0.85rem', color: 'var(--primary)' }}>
-                              Order Items Checklist
-                            </div>
-                            <div style={{ padding: '8px 18px' }}>
-                              {order.items.map((item, idx) => (
-                                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: idx !== order.items.length - 1 ? '1px solid #f1f5f9' : 'none', fontSize: '0.85rem' }}>
-                                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    <span style={{ color: item.picked ? '#10b981' : '#cbd5e1' }}>
-                                      {item.picked ? '●' : '○'}
-                                    </span>
-                                    <span style={{ textDecoration: item.picked && order.status !== 'Payment Confirmed' ? 'line-through' : 'none', color: item.picked && order.status !== 'Payment Confirmed' ? 'var(--text-muted)' : 'var(--text-main)', fontWeight: 600 }}>
-                                      {item.name} (x{item.quantity})
-                                    </span>
-                                  </div>
-                                  <span style={{ fontWeight: 700 }}>GH₵ {(item.price * item.quantity).toFixed(2)}</span>
+                                  return (
+                                    <div key={stage.key} className={`timeline-step ${statusClass}`}>
+                                      <div className="timeline-dot">
+                                        {isCompleted ? '✓' : stage.icon}
+                                      </div>
+                                      <span className="timeline-label">{stage.label}</span>
+                                      <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', marginTop: '2px', textAlign: 'center' }}>{stage.desc}</span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+
+                              {/* Live Logistics Chat Updates Feed */}
+                              <div style={{ marginTop: '25px', background: '#f8fafc', padding: '15px', borderRadius: '12px', border: '1px solid var(--border)' }}>
+                                <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)', display: 'block', marginBottom: '10px', letterSpacing: '0.5px' }}>
+                                  ⚡ LIVE LOGISTICS SMS ALERTS
+                                </span>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                  {getRiderUpdateMessage(order.status, order.shopper, order.rider).map((chat, idx) => (
+                                    <div key={idx} style={{ background: 'white', border: '1px solid var(--border)', padding: '10px 12px', borderRadius: '10px', fontSize: '0.8rem' }}>
+                                      <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', marginBottom: '3px', fontSize: '0.68rem', fontWeight: 600 }}>
+                                        <span>MallMart Dispatch Hub</span>
+                                        <span>{chat.time}</span>
+                                      </div>
+                                      <p style={{ margin: 0, color: '#334155', fontWeight: 600, lineHeight: '1.4' }}>{chat.msg}</p>
+                                    </div>
+                                  ))}
                                 </div>
-                              ))}
+                              </div>
+                            </>
+                          ) : (
+                            <div style={{ border: '1px solid var(--border)', borderRadius: '16px', background: 'white', overflow: 'hidden' }}>
+                              <div style={{ background: '#f8fafc', padding: '12px 18px', borderBottom: '1px solid var(--border)', fontWeight: 700, fontSize: '0.85rem', color: 'var(--primary)' }}>
+                                Order Items Checklist
+                              </div>
+                              <div style={{ padding: '8px 18px' }}>
+                                {order.items.map((item, idx) => (
+                                  <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '10px 0', borderBottom: idx !== order.items.length - 1 ? '1px solid #f1f5f9' : 'none', fontSize: '0.85rem' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                      <span style={{ color: item.picked ? '#10b981' : '#cbd5e1' }}>
+                                        {item.picked ? '●' : '○'}
+                                      </span>
+                                      <span style={{ textDecoration: item.picked && order.status !== 'Payment Confirmed' ? 'line-through' : 'none', color: item.picked && order.status !== 'Payment Confirmed' ? 'var(--text-muted)' : 'var(--text-main)', fontWeight: 600 }}>
+                                        {item.name} (x{item.quantity})
+                                      </span>
+                                    </div>
+                                    <span style={{ fontWeight: 700 }}>GH₵ {(item.price * item.quantity).toFixed(2)}</span>
+                                  </div>
+                                ))}
+                              </div>
                             </div>
-                          </div>
+                          )}
                         </div>
                       );
                     })()
