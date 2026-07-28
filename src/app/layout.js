@@ -2,81 +2,42 @@ import './globals.css';
 import { GoogleAnalytics } from '@next/third-parties/google';
 
 export const metadata = {
-  metadataBase: new URL('https://neatbrandtrade.com'),
-  title: 'Neat Brand Trade | Buy Premium Cleaning & Industrial Chemicals',
-  description: 'Shop premium retail cleaning products and bulk industrial chemicals. Direct from manufacturer. Wholesale pricing available in 5L, 25L, and tons. Call/WhatsApp 0246272115 to order today!',
-  keywords: 'cleaning chemicals, industrial chemicals, buy bleach ghana, neat brand trade, wholesale chemicals, bulk cleaning products, home care, fabric care',
+  metadataBase: new URL('https://mallmart.gh'),
+  title: 'MallMart | On-Demand Mall Shopping & Delivery Platform',
+  description: 'Shop items from Accra Mall, West Hills Mall, and A&C Mall. Paid up front by Mobile Money, bought in-person by our Shoppers, and delivered by Dispatch Riders.',
+  keywords: 'mallmart, online shopping ghana, accra mall online, west hills mall online, mtn momo shopping, buy groceries accra, dispatch delivery',
   openGraph: {
-    title: 'Neat Brand Trade | Premium Cleaning Products',
-    description: 'Direct manufacturer of retail and industrial cleaning solutions. Shop 5L, 25L and wholesale volumes today.',
-    url: 'https://neatbrandtrade.com',
-    siteName: 'Neat Brand Trade',
-    images: [
-      {
-        url: '/NBT Logo_.png',
-        width: 800,
-        height: 600,
-        alt: 'Neat Brand Trade Logo',
-      },
-    ],
+    title: 'MallMart | On-Demand Mall Shopping & Delivery',
+    description: 'Shop items from top physical malls in Ghana and get them delivered to your doorstep in real time.',
+    url: 'https://mallmart.gh',
+    siteName: 'MallMart',
     locale: 'en_US',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Neat Brand Trade | Buy Premium Cleaning & Industrial Chemicals',
-    description: 'Shop premium retail cleaning products and bulk industrial chemicals. Direct from manufacturer.',
-    images: ['/NBT Logo_.png'],
-  },
-  icons: {
-    icon: '/NBT Logo_.png',
+    title: 'MallMart | On-Demand Mall Shopping & Delivery',
+    description: 'Shop items from top physical malls in Ghana and get them delivered to your doorstep in real time.',
   },
   robots: {
     index: true,
     follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-  verification: {
-    google: 'aV1QVjBiYY8xBBwAnBj32A-0J1P8f3WQo7-oNbeg1K4',
-  },
+  }
 };
 
 export default function RootLayout({ children }) {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
-    name: 'Neat Brand Trade',
-    image: 'https://neatbrandtrade.com/NBT Logo_.png',
-    description: 'Manufacturer and distributor of premium retail and industrial cleaning chemicals.',
-    telephone: '0246272115',
-    url: 'https://neatbrandtrade.com',
+    name: 'MallMart Ghana',
+    description: 'On-demand shopping and delivery platform from major Ghanaian malls.',
+    url: 'https://mallmart.gh',
     priceRange: 'GH₵',
     address: {
       '@type': 'PostalAddress',
       addressLocality: 'Accra',
       addressCountry: 'GH'
-    },
-    openingHoursSpecification: [
-      {
-        '@type': 'OpeningHoursSpecification',
-        dayOfWeek: [
-          'Monday',
-          'Tuesday',
-          'Wednesday',
-          'Thursday',
-          'Friday',
-          'Saturday'
-        ],
-        opens: '08:00',
-        closes: '18:00'
-      }
-    ]
+    }
   };
 
   return (
@@ -86,6 +47,9 @@ export default function RootLayout({ children }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
       </head>
       <body>
         {children}
@@ -94,3 +58,4 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
+
