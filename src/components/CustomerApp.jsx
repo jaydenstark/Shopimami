@@ -5,7 +5,7 @@ import { useMallMart } from '../hooks/useMallMart';
 import { malls, stores, products } from '../data/mallData';
 import { 
   ShoppingCart, Check, MapPin, AlertCircle, X, 
-  Activity, ArrowRight, Minus, Plus, Home, Database, AlertTriangle 
+  Activity, ArrowRight, Minus, Plus, Home, Database, AlertTriangle, Search 
 } from 'lucide-react';
 
 export default function CustomerApp() {
@@ -15,8 +15,19 @@ export default function CustomerApp() {
   const [selectedMall, setSelectedMall] = useState(null);
   const [selectedStore, setSelectedStore] = useState(null);
   const [cart, setCart] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  
+  // Checkout & drawers
   const [checkoutForm, setCheckoutForm] = useState({ name: '', phone: '', address: '', momoProvider: 'MTN MoMo' });
   const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
+  const [mobileCartOpen, setMobileCartOpen] = useState(false);
+  
+  // Retro USSD Simulator
+  const [ussdPromptOpen, setUssdPromptOpen] = useState(false);
+  const [ussdPin, setUssdPin] = useState('');
+  const [pendingOrderData, setPendingOrderData] = useState(null);
+
+  // Tracking
   const [trackingOrderId, setTrackingOrderId] = useState('');
   const [typedTrackingId, setTypedTrackingId] = useState('');
   const [toast, setToast] = useState(null);
@@ -65,7 +76,7 @@ export default function CustomerApp() {
     });
   };
 
-  const handleCheckout = async (e) => {
+  const handleCheckoutSubmit = (e) => {
     e.preventDefault();
     if (!checkoutForm.name || !checkoutForm.phone || !checkoutForm.address) {
       showToast("Please fill in all checkout details.", "error");
@@ -96,16 +107,30 @@ export default function CustomerApp() {
       momoProvider: checkoutForm.momoProvider
     };
 
+    // Close drawers and trigger authentic USSD mobile money pin prompt simulator!
+    setPendingOrderData(orderData);
+    setCheckoutModalOpen(false);
+    setMobileCartOpen(false);
+    setUssdPin('');
+    setUssdPromptOpen(true);
+  };
+
+  const executeUssdPayment = async () => {
+    if (ussdPin.length < 4) return;
+    
     try {
-      const orderId = await addOrder(orderData);
+      const orderId = await addOrder(pendingOrderData);
       setTrackingOrderId(orderId);
       setTypedTrackingId(orderId);
       setCart([]);
-      setCheckoutModalOpen(false);
-      showToast(`Order placed successfully! ID: ${orderId}`, "success");
+      setUssdPromptOpen(false);
+      setPendingOrderData(null);
+      setUssdPin('');
+      showToast(`Payment authorized. Order ${orderId} placed!`, "success");
     } catch (e) {
       console.error(e);
       showToast("Error processing checkout. Try again.", "error");
+      setUssdPromptOpen(false);
     }
   };
 
@@ -114,6 +139,137 @@ export default function CustomerApp() {
   const deliveryFee = isCartEmpty ? 0 : 25.00;
   const serviceFee = isCartEmpty ? 0 : Math.max(10.00, cartSubtotal * 0.05);
   const cartTotal = cartSubtotal + deliveryFee + serviceFee;
+
+  // Filter products by search query
+  const filteredProducts = selectedStore ? Object.entries(products).reduce((acc, [category, items]) => {
+    const matched = items.filter(product => 
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    if (matched.length > 0) acc[category] = matched;
+    return acc;
+  }, {}) : {};
+
+  // Mock Logistics SMS Feed
+  const getRiderUpdateMessage = (status, shopper, rider) => {
+    switch(status) {
+      case 'Payment Confirmed':
+        return [
+          { time: 'Just now', msg: 'System: Payment successfully verified. Forwarding order to mall desk.' }
+        ];
+      case 'Shopper Assigned & Shopping':
+        return [
+          { time: '1m ago', msg: `System: Shopper ${shopper || 'Ekow'} accepted checklist assignment.` },
+          { time: 'Just now', msg: `${shopper || 'Ekow'} (Shopper): I have arrived inside store. Commencing item picking.` }
+        ];
+      case 'Paid at Mall':
+        return [
+          { time: '3m ago', msg: `${shopper || 'Ekow'} (Shopper): Picking completed.` },
+          { time: 'Just now', msg: `${shopper || 'Ekow'} (Shopper): Payment confirmed at store till. Packaged and locking desk.` }
+        ];
+      case 'Waiting for Rider':
+        return [
+          { time: '5m ago', msg: `${shopper || 'Ekow'} (Shopper): Settlement complete.` },
+          { time: 'Just now', msg: 'System: Package ready at Dispatch Desk. Broadcasting logistics ping to riders.' }
+        ];
+      case 'Out for Delivery':
+        return [
+          { time: '5m ago', msg: 'System: Logistics ping answered.' },
+          { time: 'Just now', msg: `${rider || 'Yaw'} (Rider): Package secured on motorbike. GPS route active. Driving to address.` }
+        ];
+      case 'Delivered':
+        return [
+          { time: '10m ago', msg: `${rider || 'Yaw'} (Rider): Approaching delivery destination.` },
+          { time: 'Just now', msg: `${rider || 'Yaw'} (Rider): Handed over to recipient. Thank you for using MallMart!` }
+        ];
+      default:
+        return [];
+    }
+  };
+
+  // Shared Cart Inner Markup (so it can be rendered in both desktop sidebar & mobile slide-up bottom sheet!)
+  const renderCartContents = () => (
+    <>
+      <h3 style={{ fontSize: '1.15rem', fontWeight: 800, marginBottom: '20px', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)' }}>
+        <ShoppingCart size={18} />
+        Shopping Cart
+        {selectedMall && <span style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-muted)' }}>({selectedMall.name})</span>}
+      </h3>
+
+      {isCartEmpty ? (
+        <div style={{ padding: '40px 0', textAlign: 'center', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+          <ShoppingCart size={32} style={{ opacity: 0.3 }} />
+          <p style={{ fontSize: '0.85rem' }}>Your cart is empty. Browse mall stores to add items!</p>
+        </div>
+      ) : (
+        <div>
+          <div style={{ maxHeight: '240px', overflowY: 'auto', marginBottom: '20px' }}>
+            {cart.map(item => (
+              <div key={item.product.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', borderBottom: '1px dashed #f1f5f9', paddingBottom: '8px' }}>
+                <div style={{ maxWidth: '60%' }}>
+                  <h4 style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--primary)' }}>{item.product.name}</h4>
+                  <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>GH₵ {item.product.price.toFixed(2)}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <button 
+                    onClick={() => updateCartQty(item.product.id, -1)}
+                    style={{ width: '24px', height: '24px', borderRadius: '6px', border: '1px solid #cbd5e1', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                  >
+                    <Minus size={10} />
+                  </button>
+                  <span style={{ fontSize: '0.85rem', fontWeight: 700, minWidth: '15px', textAlign: 'center' }}>{item.quantity}</span>
+                  <button 
+                    onClick={() => updateCartQty(item.product.id, 1)}
+                    style={{ width: '24px', height: '24px', borderRadius: '6px', border: '1px solid #cbd5e1', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
+                  >
+                    <Plus size={10} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ background: '#f8fafc', padding: '15px', borderRadius: '12px', fontSize: '0.8rem', display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px', border: '1px solid var(--border)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--text-muted)' }}>Items Subtotal</span>
+              <span style={{ fontWeight: 600 }}>GH₵ {cartSubtotal.toFixed(2)}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--text-muted)' }}>Delivery Fee (Flat)</span>
+              <span style={{ fontWeight: 600 }}>GH₵ {deliveryFee.toFixed(2)}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: 'var(--text-muted)' }}>Service Charge (5%, Min 10)</span>
+              <span style={{ fontWeight: 600 }}>GH₵ {serviceFee.toFixed(2)}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #cbd5e1', paddingTop: '8px', fontSize: '0.85rem', fontWeight: 800, color: 'var(--primary)' }}>
+              <span>Total Amount</span>
+              <span style={{ color: 'var(--secondary)' }}>GH₵ {cartTotal.toFixed(2)}</span>
+            </div>
+          </div>
+
+          <button 
+            onClick={() => setCheckoutModalOpen(true)}
+            style={{
+              width: '100%',
+              background: 'var(--secondary)',
+              color: 'white',
+              border: 'none',
+              borderRadius: '12px',
+              padding: '14px',
+              fontWeight: 800,
+              fontSize: '0.9rem',
+              cursor: 'pointer',
+              boxShadow: '0 4px 14px rgba(255,107,0,0.3)',
+              transition: 'transform 0.2s'
+            }}
+          >
+            Pay via Mobile Money
+          </button>
+        </div>
+      )}
+    </>
+  );
 
   return (
     <div className="main-content-container" style={{ minHeight: '100vh', background: '#f8fafc', fontFamily: "'Inter', sans-serif" }}>
@@ -223,6 +379,8 @@ export default function CustomerApp() {
                       if (last) {
                         setTrackingOrderId(last);
                         setTypedTrackingId(last);
+                        // Smooth scroll to order tracker section
+                        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
                       } else {
                         showToast("No orders available in database.", "error");
                       }
@@ -245,8 +403,8 @@ export default function CustomerApp() {
               </div>
             </div>
 
-            {/* Outer Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 350px', gap: '30px', alignItems: 'start' }}>
+            {/* Outer Responsive Grid */}
+            <div className="customer-grid-layout">
               
               {/* Main Content Area */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
@@ -352,9 +510,13 @@ export default function CustomerApp() {
                           >
                             <div style={{ fontSize: '2.5rem', marginBottom: '12px' }}>🏪</div>
                             <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--primary)' }}>{store.name}</h4>
-                            <span style={{ fontSize: '0.7rem', color: 'white', background: '#3b82f6', padding: '3px 8px', borderRadius: '10px', marginTop: '10px', fontWeight: 700 }}>
-                              Verified Store
-                            </span>
+                            
+                            {/* Rich mobile indicators & badges */}
+                            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '10px', justifyContent: 'center' }}>
+                              <span className="store-tag rating">⭐ {store.id === 'shoprite' ? '4.9' : store.id === 'palace' ? '4.7' : '4.6'}</span>
+                              <span className="store-tag time">⏱️ {store.id === 'shoprite' ? '30-45m' : store.id === 'palace' ? '40-55m' : '35-50m'}</span>
+                              <span className="store-tag items">⚡ Fast Pick</span>
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -364,72 +526,92 @@ export default function CustomerApp() {
                   {/* Browse State: Shop Products */}
                   {selectedMall && selectedStore && (
                     <div>
-                      <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '25px', color: 'var(--primary)' }}>
-                        Products catalog at <span style={{ color: 'var(--secondary)' }}>{selectedStore.name}</span>
-                      </h3>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '15px', flexWrap: 'wrap', marginBottom: '25px' }}>
+                        <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary)' }}>
+                          Products at <span style={{ color: 'var(--secondary)' }}>{selectedStore.name}</span>
+                        </h3>
+                        
+                        {/* Instant Search Bar */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#f1f5f9', padding: '8px 14px', borderRadius: '12px', width: '250px', maxWidth: '100%', position: 'relative' }}>
+                          <Search size={14} style={{ color: 'var(--text-muted)', position: 'absolute', left: '12px' }} />
+                          <input 
+                            type="text" 
+                            placeholder="Search store shelves..." 
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            style={{ background: 'none', border: 'none', outline: 'none', fontSize: '0.8rem', width: '100%', paddingLeft: '14px' }}
+                          />
+                        </div>
+                      </div>
                       
-                      {Object.entries(products).map(([categoryName, items]) => (
-                        <div key={categoryName} style={{ marginBottom: '30px' }}>
-                          <h4 style={{
-                            fontSize: '0.9rem',
-                            fontWeight: 800,
-                            textTransform: 'uppercase',
-                            color: 'var(--text-muted)',
-                            borderBottom: '1px solid #f1f5f9',
-                            paddingBottom: '8px',
-                            marginBottom: '15px',
-                            letterSpacing: '1px'
-                          }}>
-                            {categoryName}
-                          </h4>
-                          
-                          <div className="product-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px' }}>
-                            {items.map(product => (
-                              <div 
-                                key={product.id}
-                                className="product-card"
-                                style={{
-                                  background: 'white',
-                                  border: '1px solid var(--border)',
-                                  borderRadius: '12px',
-                                  overflow: 'hidden',
-                                  display: 'flex',
-                                  flexDirection: 'column',
-                                  height: '100%'
-                                }}
-                              >
-                                <div className="product-image" style={{ width: '100%', height: '140px', overflow: 'hidden' }}>
-                                  <img src={product.image} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                </div>
-                                <div className="product-info" style={{ padding: '12px', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-                                  <h5 className="product-name" style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--primary)', marginBottom: '4px', lineHeight: '1.3' }}>{product.name}</h5>
-                                  <p className="product-desc" style={{ fontSize: '0.7rem', color: 'var(--text-muted)', flexGrow: 1, marginBottom: '10px' }}>{product.description.slice(0, 60)}...</p>
-                                  
-                                  <div className="product-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '8px', borderTop: '1px solid #f1f5f9' }}>
-                                    <span className="product-price" style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--primary)' }}>GH₵ {product.price.toFixed(2)}</span>
-                                    <button 
-                                      onClick={() => addToCart(product)}
-                                      className="add-to-cart-btn"
-                                      style={{
-                                        background: 'var(--secondary)',
-                                        color: 'white',
-                                        border: 'none',
-                                        borderRadius: '8px',
-                                        padding: '6px 10px',
-                                        fontSize: '0.7rem',
-                                        fontWeight: 700,
-                                        cursor: 'pointer'
-                                      }}
-                                    >
-                                      + Add
-                                    </button>
+                      {Object.keys(filteredProducts).length === 0 ? (
+                        <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)' }}>
+                          No products match your search query. Try another keyword.
+                        </div>
+                      ) : (
+                        Object.entries(filteredProducts).map(([categoryName, items]) => (
+                          <div key={categoryName} style={{ marginBottom: '30px' }}>
+                            <h4 style={{
+                              fontSize: '0.85rem',
+                              fontWeight: 800,
+                              textTransform: 'uppercase',
+                              color: 'var(--text-muted)',
+                              borderBottom: '1px solid #f1f5f9',
+                              paddingBottom: '8px',
+                              marginBottom: '15px',
+                              letterSpacing: '1px'
+                            }}>
+                              {categoryName}
+                            </h4>
+                            
+                            <div className="product-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px' }}>
+                              {items.map(product => (
+                                <div 
+                                  key={product.id}
+                                  className="product-card"
+                                  style={{
+                                    background: 'white',
+                                    border: '1px solid var(--border)',
+                                    borderRadius: '12px',
+                                    overflow: 'hidden',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    height: '100%'
+                                  }}
+                                >
+                                  <div className="product-image" style={{ width: '100%', height: '140px', overflow: 'hidden' }}>
+                                    <img src={product.image} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                  </div>
+                                  <div className="product-info" style={{ padding: '12px', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                                    <h5 className="product-name" style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--primary)', marginBottom: '4px', lineHeight: '1.3' }}>{product.name}</h5>
+                                    <p className="product-desc" style={{ fontSize: '0.7rem', color: 'var(--text-muted)', flexGrow: 1, marginBottom: '10px' }}>{product.description.slice(0, 60)}...</p>
+                                    
+                                    <div className="product-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '8px', borderTop: '1px solid #f1f5f9' }}>
+                                      <span className="product-price" style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--primary)' }}>GH₵ {product.price.toFixed(2)}</span>
+                                      <button 
+                                        onClick={() => addToCart(product)}
+                                        className="add-to-cart-btn"
+                                        style={{
+                                          background: 'var(--secondary)',
+                                          color: 'white',
+                                          border: 'none',
+                                          borderRadius: '8px',
+                                          padding: '6px 10px',
+                                          fontSize: '0.7rem',
+                                          fontWeight: 700,
+                                          cursor: 'pointer'
+                                        }}
+                                      >
+                                        + Add
+                                      </button>
+                                    </div>
                                   </div>
                                 </div>
-                              </div>
-                            ))}
+                              ))}
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))
+                      )}
                     </div>
                   )}
                 </section>
@@ -577,6 +759,24 @@ export default function CustomerApp() {
                             })}
                           </div>
 
+                          {/* Live Logistics Chat Updates Feed */}
+                          <div style={{ marginTop: '35px', background: '#f8fafc', padding: '20px', borderRadius: '16px', border: '1px solid var(--border)' }}>
+                            <span style={{ fontSize: '0.75rem', fontWeight: 800, color: 'var(--text-muted)', display: 'block', marginBottom: '12px', letterSpacing: '0.5px' }}>
+                              ⚡ LIVE LOGISTICS SMS ALERTS
+                            </span>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                              {getRiderUpdateMessage(order.status, order.shopper, order.rider).map((chat, idx) => (
+                                <div key={idx} style={{ background: 'white', border: '1px solid var(--border)', padding: '10px 14px', borderRadius: '12px', fontSize: '0.8rem', animation: 'checkbox-pop 0.3s ease-out' }}>
+                                  <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-muted)', marginBottom: '3px', fontSize: '0.68rem', fontWeight: 600 }}>
+                                    <span>MallMart Dispatch Hub</span>
+                                    <span>{chat.time}</span>
+                                  </div>
+                                  <p style={{ margin: 0, color: '#334155', fontWeight: 600, lineHeight: '1.4' }}>{chat.msg}</p>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+
                           <div style={{ marginTop: '30px', border: '1px solid var(--border)', borderRadius: '16px', background: 'white', overflow: 'hidden' }}>
                             <div style={{ background: '#f8fafc', padding: '12px 18px', borderBottom: '1px solid var(--border)', fontWeight: 700, fontSize: '0.85rem', color: 'var(--primary)' }}>
                               Order Items Checklist
@@ -608,102 +808,48 @@ export default function CustomerApp() {
                 </section>
               </div>
 
-              {/* Sidebar Cart Panel */}
-              <aside style={{
-                background: 'white',
-                padding: '24px',
-                borderRadius: '24px',
-                border: '1px solid var(--border)',
-                boxShadow: 'var(--shadow-sm)',
-                position: 'sticky',
-                top: '85px'
-              }}>
-                <h3 style={{ fontSize: '1.15rem', fontWeight: 800, marginBottom: '20px', borderBottom: '1px solid #f1f5f9', paddingBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--primary)' }}>
-                  <ShoppingCart size={18} />
-                  Shopping Cart
-                  {selectedMall && <span style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-muted)' }}>({selectedMall.name})</span>}
-                </h3>
-
-                {isCartEmpty ? (
-                  <div style={{ padding: '40px 0', textAlign: 'center', color: 'var(--text-muted)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
-                    <ShoppingCart size={32} style={{ opacity: 0.3 }} />
-                    <p style={{ fontSize: '0.85rem' }}>Your cart is empty. Browse mall stores to add items!</p>
-                  </div>
-                ) : (
-                  <div>
-                    <div style={{ maxHeight: '240px', overflowY: 'auto', marginBottom: '20px' }}>
-                      {cart.map(item => (
-                        <div key={item.product.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', borderBottom: '1px dashed #f1f5f9', paddingBottom: '8px' }}>
-                          <div style={{ maxWidth: '60%' }}>
-                            <h4 style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--primary)' }}>{item.product.name}</h4>
-                            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>GH₵ {item.product.price.toFixed(2)}</span>
-                          </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <button 
-                              onClick={() => updateCartQty(item.product.id, -1)}
-                              style={{ width: '24px', height: '24px', borderRadius: '6px', border: '1px solid #cbd5e1', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-                            >
-                              <Minus size={10} />
-                            </button>
-                            <span style={{ fontSize: '0.85rem', fontWeight: 700, minWidth: '15px', textAlign: 'center' }}>{item.quantity}</span>
-                            <button 
-                              onClick={() => updateCartQty(item.product.id, 1)}
-                              style={{ width: '24px', height: '24px', borderRadius: '6px', border: '1px solid #cbd5e1', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
-                            >
-                              <Plus size={10} />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div style={{ background: '#f8fafc', padding: '15px', borderRadius: '12px', fontSize: '0.8rem', display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px', border: '1px solid var(--border)' }}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span style={{ color: 'var(--text-muted)' }}>Items Subtotal</span>
-                        <span style={{ fontWeight: 600 }}>GH₵ {cartSubtotal.toFixed(2)}</span>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span style={{ color: 'var(--text-muted)' }}>Delivery Fee (Flat)</span>
-                        <span style={{ fontWeight: 600 }}>GH₵ {deliveryFee.toFixed(2)}</span>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span style={{ color: 'var(--text-muted)' }}>Service Charge (5%, Min 10)</span>
-                        <span style={{ fontWeight: 600 }}>GH₵ {serviceFee.toFixed(2)}</span>
-                      </div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #cbd5e1', paddingTop: '8px', fontSize: '0.85rem', fontWeight: 800, color: 'var(--primary)' }}>
-                        <span>Total Amount</span>
-                        <span style={{ color: 'var(--secondary)' }}>GH₵ {cartTotal.toFixed(2)}</span>
-                      </div>
-                    </div>
-
-                    <button 
-                      onClick={() => setCheckoutModalOpen(true)}
-                      style={{
-                        width: '100%',
-                        background: 'var(--secondary)',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '12px',
-                        padding: '14px',
-                        fontWeight: 800,
-                        fontSize: '0.9rem',
-                        cursor: 'pointer',
-                        boxShadow: '0 4px 14px rgba(255,107,0,0.3)',
-                        transition: 'transform 0.2s'
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
-                      onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
-                    >
-                      Pay via Mobile Money
-                    </button>
-                  </div>
-                )}
+              {/* Sidebar Cart Panel (Desktop Only) */}
+              <aside className="customer-sidebar">
+                <div style={{ background: 'white', padding: '24px', borderRadius: '24px', border: '1px solid var(--border)', boxShadow: 'var(--shadow-sm)' }}>
+                  {renderCartContents()}
+                </div>
               </aside>
             </div>
 
+            {/* Mobile Floating Cart Action Pill */}
+            {cart.length > 0 && (
+              <div className="mobile-cart-bar" onClick={() => setMobileCartOpen(true)}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <ShoppingCart size={20} />
+                  <span style={{ fontWeight: 800 }}>{cart.reduce((a, c) => a + c.quantity, 0)} items</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 800, fontSize: '0.85rem' }}>
+                  View Cart (GH₵ {cartTotal.toFixed(2)})
+                  <ArrowRight size={16} />
+                </div>
+              </div>
+            )}
+
+            {/* MOBILE SHEET CART DRAWER */}
+            {mobileCartOpen && (
+              <div className="bottom-sheet-modal" style={{ zIndex: 9999 }}>
+                <div className="bottom-sheet-content" style={{ padding: '24px', position: 'relative' }}>
+                  <button 
+                    onClick={() => setMobileCartOpen(false)}
+                    style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', zIndex: 10 }}
+                  >
+                    <X size={20} />
+                  </button>
+                  <div style={{ marginTop: '10px' }}>
+                    {renderCartContents()}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* CHECKOUT MOMO MODAL */}
             {checkoutModalOpen && (
-              <div className="bottom-sheet-modal" style={{ zIndex: 3000 }}>
+              <div className="bottom-sheet-modal" style={{ zIndex: 10000 }}>
                 <div className="bottom-sheet-content" style={{ padding: '30px', position: 'relative' }}>
                   <button 
                     onClick={() => setCheckoutModalOpen(false)}
@@ -714,11 +860,11 @@ export default function CustomerApp() {
 
                   <div style={{ textAlign: 'center', marginBottom: '20px' }}>
                     <div style={{ fontSize: '2.5rem', marginBottom: '10px' }}>📱</div>
-                    <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary)' }}>Mobile Money Checkout</h3>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Confirm your details and authorize payment on your phone.</p>
+                    <h3 style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--primary)' }}>Mobile Money Details</h3>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Confirm your details and authorize prompt.</p>
                   </div>
 
-                  <form onSubmit={handleCheckout} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                  <form onSubmit={handleCheckoutSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
                     <div>
                       <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-muted)', marginBottom: '5px' }}>Customer Name</label>
                       <input 
@@ -783,9 +929,51 @@ export default function CustomerApp() {
                         marginTop: '10px'
                       }}
                     >
-                      Pay & Authorize Prompt 🔓
+                      Request Payment Prompt 🔓
                     </button>
                   </form>
+                </div>
+              </div>
+            )}
+
+            {/* RETRO USSD OVERLAY PIN SIMULATOR */}
+            {ussdPromptOpen && (
+              <div className="ussd-overlay">
+                <div className="ussd-dialog">
+                  <div className="ussd-title" style={{
+                    color: pendingOrderData?.momoProvider === 'MTN MoMo' ? '#facc15' : pendingOrderData?.momoProvider === 'Telecel Cash' ? '#ef4444' : '#06b6d4',
+                    borderBottomColor: 'rgba(255,255,255,0.1)'
+                  }}>
+                    {pendingOrderData?.momoProvider || 'Mobile Money'} Prompt
+                  </div>
+                  <div className="ussd-body">
+                    Do you want to authorize payment of GHS {pendingOrderData?.total.toFixed(2)} to MallMart Delivery Services?<br/><br/>
+                    Enter 4-digit Wallet PIN:
+                  </div>
+                  <input 
+                    type="password" 
+                    maxLength={4}
+                    className="ussd-input"
+                    placeholder="••••"
+                    value={ussdPin}
+                    onChange={(e) => setUssdPin(e.target.value.replace(/\D/g, ''))}
+                    autoFocus
+                  />
+                  <div className="ussd-buttons">
+                    <button 
+                      className="ussd-btn" 
+                      onClick={() => { setUssdPromptOpen(false); setPendingOrderData(null); setUssdPin(''); showToast("Payment cancelled by client.", "error"); }}
+                    >
+                      Cancel
+                    </button>
+                    <button 
+                      className="ussd-btn" 
+                      disabled={ussdPin.length < 4} 
+                      onClick={executeUssdPayment}
+                    >
+                      Send
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
