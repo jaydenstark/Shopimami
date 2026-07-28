@@ -5,7 +5,7 @@ import { useMallMart } from '../hooks/useMallMart';
 import { malls, stores, products } from '../data/mallData';
 import {
   Check, MapPin, AlertCircle, X,
-  ArrowRight, Minus, Plus, Home, Database,
+  ArrowRight, Minus, Plus, Database,
   AlertTriangle, Search,
   Star, Clock, ChevronLeft
 } from 'lucide-react';
@@ -627,9 +627,6 @@ export default function CustomerApp() {
           <div className="capp-brand-icon">🛒</div>
           <span className="capp-brand-name">MallMart<span className="capp-brand-dot">.</span></span>
         </div>
-        <a href="/" className="capp-topbar-home">
-          <Home size={14} /> Portal
-        </a>
       </header>
 
       {/* ── TAB CONTENT ── */}
