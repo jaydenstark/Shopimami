@@ -577,6 +577,248 @@ ul {
   animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Mobile Sticky Bottom Tab Bar Navigation */
+.mobile-tab-bar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .role-switcher-bar {
+    display: none !important; /* Hide desktop top bar */
+  }
+  
+  .mobile-tab-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background: rgba(10, 15, 22, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 9999;
+    justify-content: space-around;
+    align-items: center;
+    padding-bottom: env(safe-area-inset-bottom);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.35);
+  }
+  
+  .mobile-tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #94a3b8;
+    background: none;
+    border: none;
+    font-size: 0.65rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    gap: 4px;
+    flex: 1;
+    height: 100%;
+    padding: 6px 0;
+  }
+  
+  .mobile-tab-item.active {
+    color: var(--secondary);
+  }
+  
+  .mobile-tab-item svg {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.2s ease;
+  }
+  
+  .mobile-tab-item.active svg {
+    transform: scale(1.15);
+    color: var(--secondary);
+  }
+  
+  /* Apply padding bottom to main container on mobile so sticky footer doesn't overlap content */
+  .main-content-container {
+    padding-bottom: 90px !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+}
+
+/* Responsive Bottom Sheet Drawers for Modals */
+.bottom-sheet-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(4px);
+  padding: 16px;
+}
+
+.bottom-sheet-content {
+  background: white;
+  border-radius: 24px;
+  width: 500px;
+  max-width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: scale-up-modal 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (max-width: 768px) {
+  .bottom-sheet-modal {
+    align-items: flex-end;
+    padding: 0;
+  }
+  
+  .bottom-sheet-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 24px 24px 0 0 !important;
+    animation: slide-up-sheet 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+}
+
+@keyframes scale-up-modal {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes slide-up-sheet {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+/* Mobile Vertical Status Timelines */
+@media (max-width: 768px) {
+  .timeline-container {
+    flex-direction: column !important;
+    gap: 28px !important;
+    margin: 30px 0 30px 16px !important;
+    position: relative !important;
+    align-items: flex-start !important;
+  }
+  
+  .timeline-line {
+    top: 15px !important;
+    bottom: 15px !important;
+    left: 20px !important;
+    width: 4px !important;
+    height: calc(100% - 30px) !important;
+    right: auto !important;
+  }
+  
+  .timeline-line-progress {
+    width: 100% !important;
+    height: var(--progress, 0%) !important;
+    transition: height 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  
+  .timeline-step {
+    flex-direction: row !important;
+    align-items: center !important;
+    width: 100% !important;
+    gap: 16px !important;
+  }
+  
+  .timeline-dot {
+    width: 40px !important;
+    height: 40px !important;
+    font-size: 1rem !important;
+    flex-shrink: 0 !important;
+  }
+  
+  .timeline-label {
+    margin-top: 0 !important;
+    text-align: left !important;
+    font-size: 0.85rem !important;
+  }
+}
+
+/* High-Density 2-Column Product Catalog on Phones */
+@media (max-width: 600px) {
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+  
+  .product-card {
+    border-radius: 16px !important;
+  }
+  
+  .product-image {
+    height: 140px !important;
+  }
+  
+  .product-info {
+    padding: 12px !important;
+  }
+  
+  .product-name {
+    font-size: 0.95rem !important;
+    line-height: 1.25;
+    margin-bottom: 4px !important;
+    font-weight: 700 !important;
+  }
+  
+  .product-desc {
+    display: none !important; /* Hide description on mobile to keep catalog clean */
+  }
+  
+  .product-price {
+    font-size: 0.95rem !important;
+  }
+  
+  .product-footer {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+  
+  .add-to-cart-btn {
+    width: 100% !important;
+    text-align: center !important;
+    padding: 8px !important;
+    font-size: 0.75rem !important;
+  }
+}
+
+/* Horizontal Swipe Carousel for Malls on Mobile */
+@media (max-width: 768px) {
+  .malls-responsive-flex {
+    display: flex !important;
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    scroll-snap-type: x mandatory !important;
+    gap: 16px !important;
+    padding: 10px 4px 20px !important;
+    scroll-padding: 4px !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  .malls-responsive-flex::-webkit-scrollbar {
+    height: 4px;
+  }
+  
+  .malls-responsive-flex::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+  
+  .mall-responsive-card {
+    flex: 0 0 85% !important;
+    scroll-snap-align: start !important;
+  }
+}
+
+
 
 
 

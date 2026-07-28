@@ -180,7 +180,7 @@ export default function MallMartClientPage() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8fafc', fontFamily: "'Inter', sans-serif" }}>
+    <div className="main-content-container" style={{ minHeight: '100vh', background: '#f8fafc', fontFamily: "'Inter', sans-serif" }}>
       {/* -------------------- ROLE SWITCHER HEADER -------------------- */}
       <header className="role-switcher-bar">
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
@@ -255,7 +255,7 @@ export default function MallMartClientPage() {
       </header>
 
       {/* -------------------- MAIN PAGE CONTAINER -------------------- */}
-      <main className="container animate-fade" style={{ padding: '30px 15px 60px' }}>
+      <main className="container main-content-container animate-fade" style={{ padding: '30px 15px 60px' }}>
         
         {/* Loading Spinner */}
         {!isLoaded ? (
@@ -305,6 +305,26 @@ export default function MallMartClientPage() {
           <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{toast.message}</span>
         </div>
       )}
+
+      {/* -------------------- MOBILE STICKY BOTTOM TAB BAR -------------------- */}
+      <nav className="mobile-tab-bar">
+        {[
+          { id: 'customer', label: 'Customer', icon: <Smartphone /> },
+          { id: 'shopper', label: 'Shopper', icon: <ShoppingBag /> },
+          { id: 'rider', label: 'Rider', icon: <Truck /> },
+          { id: 'supervisor', label: 'Supervisor', icon: <ClipboardList /> },
+          { id: 'admin', label: 'Admin', icon: <TrendingUp /> }
+        ].map(role => (
+          <button
+            key={role.id}
+            className={`mobile-tab-item ${activeRole === role.id ? 'active' : ''}`}
+            onClick={() => setActiveRole(role.id)}
+          >
+            {role.icon}
+            <span>{role.label}</span>
+          </button>
+        ))}
+      </nav>
     </div>
   );
 
@@ -433,10 +453,11 @@ export default function MallMartClientPage() {
               {!selectedMall && (
                 <div>
                   <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '20px', color: 'var(--primary)' }}>Select a Mall to start shopping</h3>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
+                  <div className="malls-responsive-flex" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px' }}>
                     {malls.map(mall => (
                       <div 
                         key={mall.id}
+                        className="mall-responsive-card"
                         onClick={() => {
                           setSelectedMall(mall);
                           setCart([]); // Clear cart if switching malls to maintain strict same-mall cart rule
@@ -525,10 +546,11 @@ export default function MallMartClientPage() {
                         {categoryName}
                       </h4>
                       
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px' }}>
+                      <div className="product-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px' }}>
                         {items.map(product => (
                           <div 
                             key={product.id}
+                            className="product-card"
                             style={{
                               background: 'white',
                               border: '1px solid var(--border)',
@@ -539,15 +561,18 @@ export default function MallMartClientPage() {
                               height: '100%'
                             }}
                           >
-                            <img src={product.image} alt={product.name} style={{ width: '100%', height: '140px', objectFit: 'cover' }} />
-                            <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
-                              <h5 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--primary)', marginBottom: '4px', lineHeight: '1.3' }}>{product.name}</h5>
-                              <p style={{ fontSize: '0.7rem', color: 'var(--text-muted)', flexGrow: 1, marginBottom: '10px' }}>{product.description.slice(0, 60)}...</p>
+                            <div className="product-image" style={{ width: '100%', height: '140px', overflow: 'hidden' }}>
+                              <img src={product.image} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            </div>
+                            <div className="product-info" style={{ padding: '12px', display: 'flex', flexDirection: 'column', flexGrow: 1 }}>
+                              <h5 className="product-name" style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--primary)', marginBottom: '4px', lineHeight: '1.3' }}>{product.name}</h5>
+                              <p className="product-desc" style={{ fontSize: '0.7rem', color: 'var(--text-muted)', flexGrow: 1, marginBottom: '10px' }}>{product.description.slice(0, 60)}...</p>
                               
-                              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '8px', borderTop: '1px solid #f1f5f9' }}>
-                                <span style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--primary)' }}>GH₵ {product.price.toFixed(2)}</span>
+                              <div className="product-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 'auto', paddingTop: '8px', borderTop: '1px solid #f1f5f9' }}>
+                                <span className="product-price" style={{ fontSize: '0.9rem', fontWeight: 800, color: 'var(--primary)' }}>GH₵ {product.price.toFixed(2)}</span>
                                 <button 
                                   onClick={() => addToCart(product)}
+                                  className="add-to-cart-btn"
                                   style={{
                                     background: 'var(--secondary)',
                                     color: 'white',
@@ -718,25 +743,8 @@ export default function MallMartClientPage() {
 
         {/* CHECKOUT MOMO MODAL */}
         {checkoutModalOpen && (
-          <div style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 3000,
-            backdropFilter: 'blur(4px)'
-          }}>
-            <div style={{
-              background: 'white',
-              borderRadius: '24px',
-              width: '450px',
-              maxWidth: '90%',
-              padding: '30px',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-              position: 'relative'
-            }}>
+          <div className="bottom-sheet-modal" style={{ zIndex: 3000 }}>
+            <div className="bottom-sheet-content" style={{ padding: '30px', position: 'relative' }}>
               <button 
                 onClick={() => setCheckoutModalOpen(false)}
                 style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
@@ -914,7 +922,7 @@ export default function MallMartClientPage() {
         {/* Timeline graphics */}
         <div className="timeline-container">
           <div className="timeline-line">
-            <div className="timeline-line-progress" style={{ width: progressWidth }}></div>
+            <div className="timeline-line-progress" style={{ '--progress': progressWidth, width: 'var(--progress, 0%)', height: 'var(--progress, 0%)' }}></div>
           </div>
 
           {stages.map((stage, idx) => {
@@ -1598,24 +1606,8 @@ export default function MallMartClientPage() {
 
         {/* FLAG NOTE MODAL */}
         {flagModalOpen && (
-          <div style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 3000,
-            backdropFilter: 'blur(4px)'
-          }}>
-            <div style={{
-              background: 'white',
-              borderRadius: '20px',
-              width: '400px',
-              padding: '24px',
-              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
-              position: 'relative'
-            }}>
+          <div className="bottom-sheet-modal" style={{ zIndex: 3000 }}>
+            <div className="bottom-sheet-content" style={{ padding: '24px', position: 'relative' }}>
               <button 
                 onClick={() => setFlagModalOpen(false)}
                 style={{ position: 'absolute', top: '15px', right: '15px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
