@@ -490,26 +490,27 @@ export default function CustomerApp() {
                       <h3 style={{ fontSize: '1.25rem', fontWeight: 800, marginBottom: '20px', color: 'var(--primary)' }}>
                         Stores inside <span style={{ color: 'var(--secondary)' }}>{selectedMall.name}</span>
                       </h3>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px' }}>
+                      <div className="stores-responsive-grid">
                         {stores[selectedMall.id].map(store => (
                           <div 
                             key={store.id}
                             onClick={() => setSelectedStore(store)}
+                            className="store-tile-card"
                             style={{
                               background: 'white',
                               border: '2px solid var(--border)',
                               borderRadius: '16px',
                               padding: '20px',
                               cursor: 'pointer',
-                              transition: 'all 0.2s',
+                              transition: 'all 0.25s',
                               display: 'flex',
                               flexDirection: 'column',
                               alignItems: 'center',
                               textAlign: 'center'
                             }}
                           >
-                            <div style={{ fontSize: '2.5rem', marginBottom: '12px' }}>🏪</div>
-                            <h4 style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--primary)' }}>{store.name}</h4>
+                            <div className="store-tile-icon" style={{ fontSize: '2.5rem', marginBottom: '12px' }}>🏪</div>
+                            <h4 className="store-tile-name" style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--primary)', margin: 0 }}>{store.name}</h4>
                             
                             {/* Rich mobile indicators & badges */}
                             <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '10px', justifyContent: 'center' }}>

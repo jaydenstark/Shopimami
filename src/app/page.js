@@ -5,7 +5,7 @@ import { useMallMart } from '../hooks/useMallMart';
 import { 
   Smartphone, ShoppingBag, Truck, ClipboardList, 
   TrendingUp, Database, RotateCcw, 
-  Sparkles, ShieldCheck, ArrowRight, AlertCircle, Check 
+  Sparkles, ShieldCheck, AlertCircle, Check 
 } from 'lucide-react';
 
 export default function EntryPage() {
@@ -107,19 +107,18 @@ export default function EntryPage() {
           </div>
         </header>
 
-        {/* Apps Selection Deck Grid */}
+        {/* Apps Selection Deck Grid - Dense Compact Tiles */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: '24px',
-          marginBottom: '50px'
+          gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+          gap: '16px',
+          marginBottom: '40px'
         }}>
           {[
             {
               id: 'customer',
               name: 'Customer Portal',
               role: 'Buyer App',
-              desc: 'Browse mall stores, select verified products, fill cart, pay upfront via MoMo, and track live status.',
               icon: <Smartphone size={24} />,
               color: 'var(--secondary)',
               href: '/customer',
@@ -127,44 +126,40 @@ export default function EntryPage() {
             },
             {
               id: 'shopper',
-              name: 'Mall Shopper App',
-              role: 'Store Picker App',
-              desc: 'Receive customer checklists, check off picked products, verify till checkout, and trigger cash-out.',
+              name: 'Shopper App',
+              role: 'Store Picker',
               icon: <ShoppingBag size={24} />,
               color: '#3b82f6',
               href: '/shopper',
-              badge: 'Checklist Picker'
+              badge: 'Checklist'
             },
             {
               id: 'rider',
-              name: 'Dispatch Rider App',
-              role: 'Logistics App',
-              desc: 'Accept packed items from mall dispatch counter, navigate customer location via GPS maps, and close orders.',
+              name: 'Rider App',
+              role: 'Logistics',
               icon: <Truck size={24} />,
               color: '#10b981',
               href: '/rider',
-              badge: 'Delivery Tracker'
+              badge: 'GPS Route'
             },
             {
               id: 'supervisor',
-              name: 'Supervisor Console',
+              name: 'Supervisor',
               role: 'Audit Control',
-              desc: 'Monitor full order lifecycle queues, search/filter transaction states, flag active orders, and audits.',
               icon: <ClipboardList size={24} />,
               color: '#d97706',
               href: '/supervisor',
-              badge: flaggedCount > 0 ? `${flaggedCount} Flags Alert` : 'System Normal',
+              badge: flaggedCount > 0 ? `${flaggedCount} Flags` : 'Normal',
               badgeColor: flaggedCount > 0 ? '#ef4444' : '#64748b'
             },
             {
               id: 'admin',
-              name: 'Owner Dashboard',
-              role: 'Platform Ledger',
-              desc: 'Evaluate financial indicators, ledger transactions, platform commission, and rosters.',
+              name: 'Admin Dashboard',
+              role: 'Ledger Ledger',
               icon: <TrendingUp size={24} />,
               color: '#8b5cf6',
               href: '/admin',
-              badge: 'Revenue SVG Charts'
+              badge: 'Revenue Charts'
             }
           ].map(app => (
             <a
@@ -174,61 +169,56 @@ export default function EntryPage() {
               style={{
                 background: 'rgba(30, 41, 59, 0.4)',
                 border: '1px solid rgba(255, 255, 255, 0.08)',
-                borderRadius: '24px',
-                padding: '30px',
+                borderRadius: '16px',
+                padding: '16px',
                 textDecoration: 'none',
                 color: 'inherit',
                 display: 'flex',
                 flexDirection: 'column',
-                justifyContent: 'space-between',
-                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                alignItems: 'center',
+                textAlign: 'center',
+                justifyContent: 'center',
+                transition: 'all 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
                 backdropFilter: 'blur(10px)',
                 position: 'relative',
                 overflow: 'hidden',
-                boxShadow: '0 4px 30px rgba(0, 0, 0, 0.1)'
+                boxShadow: '0 4px 15px rgba(0, 0, 0, 0.1)',
+                aspectRatio: '1 / 1'
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.borderColor = app.color;
-                e.currentTarget.style.transform = 'translateY(-6px)';
-                e.currentTarget.style.boxShadow = `0 12px 30px -10px ${app.color}40`;
+                e.currentTarget.style.transform = 'translateY(-4px)';
+                e.currentTarget.style.boxShadow = `0 8px 20px -6px ${app.color}50`;
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
                 e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 4px 30px rgba(0, 0, 0, 0.1)';
+                e.currentTarget.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.1)';
               }}
             >
-              {/* Radial gradient glow behind card icon */}
-              <div style={{ position: 'absolute', top: '15px', right: '15px', width: '60px', height: '60px', background: app.color, opacity: 0.15, borderRadius: '50%', filter: 'blur(20px)', pointerEvents: 'none' }}></div>
+              {/* Radial gradient glow behind tile icon */}
+              <div style={{ position: 'absolute', top: '10px', right: '10px', width: '40px', height: '40px', background: app.color, opacity: 0.12, borderRadius: '50%', filter: 'blur(12px)', pointerEvents: 'none' }}></div>
               
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-                  <div style={{ background: `${app.color}20`, color: app.color, padding: '10px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {app.icon}
-                  </div>
-                  <span style={{
-                    fontSize: '0.65rem',
-                    background: app.badgeColor || 'rgba(255,255,255,0.06)',
-                    color: app.badgeColor ? 'white' : '#94a3b8',
-                    padding: '4px 10px',
-                    borderRadius: 'var(--radius-full)',
-                    fontWeight: 700,
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.5px'
-                  }}>
-                    {app.badge}
-                  </span>
-                </div>
-
-                <span style={{ fontSize: '0.75rem', fontWeight: 800, textTransform: 'uppercase', color: app.color, letterSpacing: '0.5px' }}>{app.role}</span>
-                <h3 style={{ fontSize: '1.4rem', fontWeight: 800, color: 'white', marginTop: '4px', marginBottom: '12px' }}>{app.name}</h3>
-                <p style={{ fontSize: '0.85rem', color: '#94a3b8', lineHeight: '1.5', marginBottom: '20px' }}>{app.desc}</p>
+              <div style={{ background: `${app.color}20`, color: app.color, padding: '10px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '10px' }}>
+                {app.icon}
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.85rem', fontWeight: 700, color: app.color, marginTop: 'auto', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '15px' }}>
-                Open Workspace
-                <ArrowRight size={14} />
-              </div>
+              <span style={{ fontSize: '0.65rem', fontWeight: 800, textTransform: 'uppercase', color: app.color, letterSpacing: '0.5px', display: 'block', marginBottom: '2px' }}>{app.role}</span>
+              <h3 style={{ fontSize: '0.9rem', fontWeight: 800, color: 'white', margin: 0 }}>{app.name}</h3>
+              
+              <span style={{
+                fontSize: '0.6rem',
+                background: app.badgeColor || 'rgba(255,255,255,0.06)',
+                color: app.badgeColor ? 'white' : '#94a3b8',
+                padding: '2px 8px',
+                borderRadius: 'var(--radius-full)',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                marginTop: '8px',
+                display: 'inline-block'
+              }}>
+                {app.badge}
+              </span>
             </a>
           ))}
         </div>

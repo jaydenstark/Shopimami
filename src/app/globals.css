@@ -746,47 +746,77 @@ ul {
 @media (max-width: 600px) {
   .product-grid {
     grid-template-columns: repeat(2, 1fr) !important;
-    gap: 12px !important;
+    gap: 10px !important;
   }
   
   .product-card {
-    border-radius: 16px !important;
+    border-radius: 12px !important;
   }
   
   .product-image {
-    height: 140px !important;
+    height: 95px !important;
   }
   
   .product-info {
-    padding: 12px !important;
+    padding: 8px !important;
   }
   
   .product-name {
-    font-size: 0.95rem !important;
-    line-height: 1.25;
-    margin-bottom: 4px !important;
+    font-size: 0.8rem !important;
+    line-height: 1.2;
+    margin-bottom: 2px !important;
     font-weight: 700 !important;
   }
   
   .product-desc {
-    display: none !important; /* Hide description on mobile to keep catalog clean */
+    display: none !important; /* Hide description on mobile */
   }
   
   .product-price {
-    font-size: 0.95rem !important;
+    font-size: 0.8rem !important;
   }
   
   .product-footer {
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 8px !important;
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 4px !important;
+    padding-top: 4px !important;
   }
   
   .add-to-cart-btn {
-    width: 100% !important;
+    width: auto !important;
     text-align: center !important;
-    padding: 8px !important;
-    font-size: 0.75rem !important;
+    padding: 4px 8px !important;
+    font-size: 0.65rem !important;
+  }
+}
+
+/* Responsive Stores Grid Tiles */
+.stores-responsive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 600px) {
+  .stores-responsive-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+  
+  .store-tile-card {
+    padding: 12px !important;
+    border-radius: 12px !important;
+  }
+  
+  .store-tile-icon {
+    font-size: 1.8rem !important;
+    margin-bottom: 6px !important;
+  }
+  
+  .store-tile-name {
+    font-size: 0.85rem !important;
   }
 }
 
