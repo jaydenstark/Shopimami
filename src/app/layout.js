@@ -13,11 +13,20 @@ export const metadata = {
     siteName: 'SHOPIMAMI',
     locale: 'en_US',
     type: 'website',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'SHOPIMAMI — On-Demand Mall Shopping & Delivery in Accra, Ghana',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'SHOPIMAMI | On-Demand Mall Shopping & Delivery',
     description: 'Shop items from top physical malls in Ghana and get them delivered to your doorstep in real time.',
+    images: ['/og-image.jpg'],
   },
   robots: {
     index: true,
