@@ -7,7 +7,7 @@ import {
   Check, MapPin, AlertCircle, X,
   ArrowRight, Minus, Plus, Database,
   AlertTriangle, Search,
-  Star, Clock, ChevronLeft
+  Star, Clock, ChevronLeft, MessageSquare, Send, Sparkles
 } from 'lucide-react';
 
 const CATEGORIES = ['All', ...Object.keys(products)];
@@ -102,6 +102,14 @@ export default function CustomerApp() {
   // Toast
   const [toast, setToast] = useState(null);
 
+  // Support Chat
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
+  const [supportMessages, setSupportMessages] = useState([
+    { sender: 'bot', text: 'Hi! I am your SHOPIMAMI customer support assistant. How can I help you today?', timestamp: new Date() }
+  ]);
+  const [supportInput, setSupportInput] = useState('');
+  const [isSupportTyping, setIsSupportTyping] = useState(false);
+
   useEffect(() => {
     if (!toast) return;
     const t = setTimeout(() => setToast(null), 3000);
@@ -111,6 +119,49 @@ export default function CustomerApp() {
   const showToast = useCallback((message, type = 'info') => {
     setToast({ message, type });
   }, []);
+
+  const handleSendSupportMessage = async (e) => {
+    if (e) e.preventDefault();
+    if (!supportInput.trim()) return;
+
+    const userMsg = { sender: 'user', text: supportInput, timestamp: new Date() };
+    setSupportMessages(prev => [...prev, userMsg]);
+    const inputToSend = supportInput;
+    setSupportInput('');
+    setIsSupportTyping(true);
+
+    try {
+      const conversationHistory = supportMessages.map(m => ({
+        role: m.sender === 'user' ? 'user' : 'assistant',
+        content: m.text
+      }));
+      conversationHistory.push({ role: 'user', content: inputToSend });
+
+      const res = await fetch('/api/support', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: conversationHistory })
+      });
+
+      if (!res.ok) throw new Error("Support API returned an error");
+      const data = await res.json();
+      
+      setSupportMessages(prev => [...prev, {
+        sender: 'bot',
+        text: data.message,
+        timestamp: new Date()
+      }]);
+    } catch (err) {
+      console.error("Support chat error:", err);
+      setSupportMessages(prev => [...prev, {
+        sender: 'bot',
+        text: "I'm having trouble connecting to the support server right now. Please try again in a moment.",
+        timestamp: new Date()
+      }]);
+    } finally {
+      setIsSupportTyping(false);
+    }
+  };
 
   // Cart helpers
   const cartCount    = cart.reduce((a, c) => a + c.quantity, 0);
@@ -704,6 +755,219 @@ export default function CustomerApp() {
           <span>{toast.message}</span>
         </div>
       )}
+
+      {/* ── CUSTOMER SUPPORT CHAT WIDGET ── */}
+      {isSupportOpen && (
+        <div style={{
+          position: 'fixed',
+          bottom: '150px',
+          right: '20px',
+          width: '380px',
+          height: '500px',
+          maxHeight: 'calc(80vh - 100px)',
+          maxWidth: 'calc(100vw - 40px)',
+          background: 'rgba(15, 23, 42, 0.95)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          borderRadius: '24px',
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.4)',
+          display: 'flex',
+          flexDirection: 'column',
+          zIndex: 9999,
+          overflow: 'hidden',
+          fontFamily: "'Inter', sans-serif",
+          animation: 'capp-chat-slide-in 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+        }}>
+          {/* Header */}
+          <div style={{
+            background: 'linear-gradient(90deg, rgba(79, 70, 229, 0.2), rgba(6, 182, 212, 0.2))',
+            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+            padding: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <div style={{
+                background: 'linear-gradient(135deg, #4f46e5, #06b6d4)',
+                borderRadius: '50%',
+                width: '32px',
+                height: '32px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
+                <Sparkles size={16} color="white" />
+              </div>
+              <div>
+                <h4 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 700, color: 'white' }}>SHOPIMAMI support</h4>
+                <span style={{ fontSize: '0.7rem', color: '#10b981', display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 600 }}>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#10b981', display: 'inline-block' }}></span>
+                  Grok AI Online
+                </span>
+              </div>
+            </div>
+            <button 
+              onClick={() => setIsSupportOpen(false)}
+              style={{
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: 'none',
+                borderRadius: '50%',
+                width: '28px',
+                height: '28px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#94a3b8',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'; e.currentTarget.style.color = 'white'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.05)'; e.currentTarget.style.color = '#94a3b8'; }}
+            >
+              <X size={14} />
+            </button>
+          </div>
+
+          {/* Messages */}
+          <div style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '16px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '12px'
+          }}>
+            {supportMessages.map((msg, i) => (
+              <div 
+                key={i} 
+                style={{
+                  alignSelf: msg.sender === 'user' ? 'flex-end' : 'flex-start',
+                  maxWidth: '85%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: msg.sender === 'user' ? 'flex-end' : 'flex-start'
+                }}
+              >
+                <div style={{
+                  background: msg.sender === 'user' ? 'linear-gradient(135deg, #4f46e5, #3b82f6)' : 'rgba(255, 255, 255, 0.05)',
+                  border: msg.sender === 'user' ? 'none' : '1px solid rgba(255, 255, 255, 0.06)',
+                  color: 'white',
+                  padding: '10px 14px',
+                  borderRadius: msg.sender === 'user' ? '16px 16px 0px 16px' : '16px 16px 16px 0px',
+                  fontSize: '0.85rem',
+                  lineHeight: '1.4',
+                  whiteSpace: 'pre-wrap'
+                }}>
+                  {msg.text}
+                </div>
+                <span style={{ fontSize: '0.65rem', color: '#64748b', marginTop: '4px', padding: '0 4px' }}>
+                  {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              </div>
+            ))}
+
+            {isSupportTyping && (
+              <div style={{ alignSelf: 'flex-start', display: 'flex', gap: '6px', alignItems: 'center', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.06)', padding: '10px 16px', borderRadius: '16px 16px 16px 0px' }}>
+                <span className="capp-chat-dot" style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#94a3b8', animation: 'capp-chat-blink 1.4s infinite both' }} />
+                <span className="capp-chat-dot" style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#94a3b8', animation: 'capp-chat-blink 1.4s infinite both 0.2s' }} />
+                <span className="capp-chat-dot" style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#94a3b8', animation: 'capp-chat-blink 1.4s infinite both 0.4s' }} />
+              </div>
+            )}
+          </div>
+
+          {/* Form */}
+          <form 
+            onSubmit={handleSendSupportMessage}
+            style={{
+              borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+              padding: '12px',
+              display: 'flex',
+              gap: '8px',
+              background: 'rgba(15, 23, 42, 0.5)'
+            }}
+          >
+            <input
+              type="text"
+              placeholder="Ask support..."
+              value={supportInput}
+              onChange={e => setSupportInput(e.target.value)}
+              style={{
+                flex: 1,
+                background: 'rgba(255, 255, 255, 0.05)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                borderRadius: '12px',
+                padding: '8px 12px',
+                color: 'white',
+                fontSize: '0.85rem',
+                outline: 'none',
+                transition: 'border-color 0.2s'
+              }}
+              onFocus={e => e.currentTarget.style.borderColor = '#4f46e5'}
+              onBlur={e => e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)'}
+            />
+            <button
+              type="submit"
+              disabled={!supportInput.trim() || isSupportTyping}
+              style={{
+                background: supportInput.trim() ? 'linear-gradient(135deg, #4f46e5, #06b6d4)' : 'rgba(255, 255, 255, 0.05)',
+                border: 'none',
+                borderRadius: '12px',
+                width: '36px',
+                height: '36px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: supportInput.trim() ? 'white' : '#64748b',
+                cursor: supportInput.trim() ? 'pointer' : 'default',
+                transition: 'all 0.2s'
+              }}
+            >
+              <Send size={16} />
+            </button>
+          </form>
+        </div>
+      )}
+
+      {/* Floating Toggle Button */}
+      <button
+        onClick={() => setIsSupportOpen(prev => !prev)}
+        style={{
+          position: 'fixed',
+          bottom: '80px',
+          right: '20px',
+          width: '56px',
+          height: '56px',
+          borderRadius: '50%',
+          background: 'linear-gradient(135deg, #4f46e5, #06b6d4)',
+          boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3)',
+          border: 'none',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          color: 'white',
+          cursor: 'pointer',
+          zIndex: 9999,
+          transition: 'all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
+        }}
+        onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.08)'}
+        onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+      >
+        {isSupportOpen ? <X size={24} /> : <MessageSquare size={24} />}
+      </button>
+
+      <style>{`
+        @keyframes capp-chat-slide-in {
+          from { opacity: 0; transform: translateY(20px) scale(0.95); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        @keyframes capp-chat-blink {
+          0% { opacity: 0.2; }
+          20% { opacity: 1; }
+          100% { opacity: 0.2; }
+        }
+      `}</style>
     </div>
   );
 }
