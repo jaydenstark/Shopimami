@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useMallMart } from '../hooks/useMallMart';
-import { ShoppingBag, Check, Lock, Home, Database, AlertCircle, Activity } from 'lucide-react';
+import { ShoppingBag, Check, Lock, LogOut, Database, AlertCircle, Activity } from 'lucide-react';
 
 export default function ShopperApp() {
   const { 
@@ -69,28 +69,34 @@ export default function ShopperApp() {
           </span>
         </div>
         <div>
-          <a href="/" style={{
-            background: 'rgba(255, 255, 255, 0.08)',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            color: 'white',
-            padding: '8px 16px',
-            borderRadius: 'var(--radius-full)',
-            fontSize: '0.85rem',
-            fontWeight: 600,
-            textDecoration: 'none',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            transition: 'all 0.2s'
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.18)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'; }}
+          <button
+            onClick={async () => {
+              await fetch('/api/auth/logout', { method: 'POST' });
+              window.location.href = '/login?role=shopper';
+            }}
+            style={{
+              background: 'rgba(239, 68, 68, 0.12)',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              color: '#fca5a5',
+              padding: '8px 16px',
+              borderRadius: 'var(--radius-full)',
+              fontSize: '0.85rem',
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(239,68,68,0.22)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(239,68,68,0.12)'; }}
           >
-            <Home size={14} />
-            Launcher Portal
-          </a>
+            <LogOut size={14} />
+            Sign Out
+          </button>
         </div>
       </header>
+
 
       {/* -------------------- MAIN PAGE CONTAINER -------------------- */}
       <main className="container main-content-container animate-fade" style={{ padding: '30px 15px 60px' }}>

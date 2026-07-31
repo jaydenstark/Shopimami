@@ -1,7 +1,7 @@
 'use client';
 
 import { useMallMart } from '../hooks/useMallMart';
-import { TrendingUp, UserCheck, Truck, FileText, Home, Database, Activity } from 'lucide-react';
+import { TrendingUp, UserCheck, Truck, FileText, LogOut, Database, Activity } from 'lucide-react';
 
 export default function AdminApp() {
   const { orders, isFirebase, isLoaded } = useMallMart();
@@ -58,24 +58,31 @@ export default function AdminApp() {
           </span>
         </div>
         <div>
-          <a href="/" style={{
-            background: 'rgba(255, 255, 255, 0.08)',
-            border: '1px solid rgba(255, 255, 255, 0.15)',
-            color: 'white',
-            padding: '8px 16px',
-            borderRadius: 'var(--radius-full)',
-            fontSize: '0.85rem',
-            fontWeight: 600,
-            textDecoration: 'none',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            transition: 'all 0.2s'
-          }}
+          <button
+            onClick={async () => {
+              await fetch('/api/auth/logout', { method: 'POST' });
+              window.location.href = '/login?role=admin';
+            }}
+            style={{
+              background: 'rgba(239, 68, 68, 0.12)',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              color: '#fca5a5',
+              padding: '8px 16px',
+              borderRadius: 'var(--radius-full)',
+              fontSize: '0.85rem',
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(239,68,68,0.22)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(239,68,68,0.12)'; }}
           >
-            <Home size={14} />
-            Launcher Portal
-          </a>
+            <LogOut size={14} />
+            Sign Out
+          </button>
         </div>
       </header>
 
