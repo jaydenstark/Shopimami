@@ -1,7 +1,7 @@
 import ShopperApp from '../../components/ShopperApp';
 
 export const metadata = {
-  title: 'MallMart | Mall Shopper Console',
+  title: 'SHOPIMAMI | Mall Shopper Console',
   description: 'Mall Shopper interface for receiving customer orders, picking checklists, and hand-offs.',
 };
 

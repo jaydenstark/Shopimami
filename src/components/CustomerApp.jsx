@@ -68,7 +68,7 @@ function getChatMessages(status, shopper, rider) {
   if (status === 'Delivered') return [
     ...base,
     { from: 'staff', name: r, time: '10m ago', msg: `Almost there! ETA ~2 minutes.` },
-    { from: 'staff', name: r, time: 'Just now', msg: `Delivered! ✅ Thank you for using MallMart. Enjoy your items!` },
+    { from: 'staff', name: r, time: 'Just now', msg: `Delivered! ✅ Thank you for using SHOPIMAMI. Enjoy your items!` },
   ];
   return base;
 }
@@ -246,7 +246,7 @@ export default function CustomerApp() {
 
           {/* How it works */}
           <div className="capp-how-it-works">
-            <h4 className="capp-hiw-title">How MallMart Works</h4>
+            <h4 className="capp-hiw-title">How SHOPIMAMI Works</h4>
             <div className="capp-hiw-steps">
               {[
                 { icon: '🛒', title: 'Browse & Order', desc: 'Pick items from your favourite store' },
@@ -625,7 +625,7 @@ export default function CustomerApp() {
       <header className="capp-topbar">
         <div className="capp-topbar-brand">
           <div className="capp-brand-icon">🛒</div>
-          <span className="capp-brand-name">MallMart<span className="capp-brand-dot">.</span></span>
+          <span className="capp-brand-name">SHOPIMAMI<span className="capp-brand-dot">.</span></span>
         </div>
       </header>
 
@@ -634,7 +634,7 @@ export default function CustomerApp() {
         {!isLoaded ? (
           <div className="capp-loading">
             <div className="capp-spinner" />
-            <p>Syncing MallMart...</p>
+            <p>Syncing SHOPIMAMI...</p>
           </div>
         ) : (
           <>
@@ -680,7 +680,7 @@ export default function CustomerApp() {
             <div className="ussd-body">
               Authorize payment of<br />
               <strong style={{ fontSize: '1.2rem', color: '#fff' }}>GHS {pendingOrder?.total.toFixed(2)}</strong><br />
-              to MallMart Delivery Services?<br /><br />
+              to SHOPIMAMI Delivery Services?<br /><br />
               Enter 4-digit Wallet PIN:
             </div>
             <input type="password" maxLength={4} className="ussd-input" placeholder="••••"

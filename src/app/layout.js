@@ -2,21 +2,21 @@ import './globals.css';
 import { GoogleAnalytics } from '@next/third-parties/google';
 
 export const metadata = {
-  metadataBase: new URL('https://mallmart.gh'),
-  title: 'MallMart | On-Demand Mall Shopping & Delivery Platform',
+  metadataBase: new URL('https://shopimami.com'),
+  title: 'SHOPIMAMI | On-Demand Mall Shopping & Delivery Platform',
   description: 'Shop items from Accra Mall, West Hills Mall, and A&C Mall. Paid up front by Mobile Money, bought in-person by our Shoppers, and delivered by Dispatch Riders.',
-  keywords: 'mallmart, online shopping ghana, accra mall online, west hills mall online, mtn momo shopping, buy groceries accra, dispatch delivery',
+  keywords: 'shopimami, online shopping ghana, accra mall online, west hills mall online, mtn momo shopping, buy groceries accra, dispatch delivery',
   openGraph: {
-    title: 'MallMart | On-Demand Mall Shopping & Delivery',
+    title: 'SHOPIMAMI | On-Demand Mall Shopping & Delivery',
     description: 'Shop items from top physical malls in Ghana and get them delivered to your doorstep in real time.',
-    url: 'https://mallmart.gh',
-    siteName: 'MallMart',
+    url: 'https://shopimami.com',
+    siteName: 'SHOPIMAMI',
     locale: 'en_US',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'MallMart | On-Demand Mall Shopping & Delivery',
+    title: 'SHOPIMAMI | On-Demand Mall Shopping & Delivery',
     description: 'Shop items from top physical malls in Ghana and get them delivered to your doorstep in real time.',
   },
   robots: {
@@ -29,9 +29,9 @@ export default function RootLayout({ children }) {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
-    name: 'MallMart Ghana',
+    name: 'SHOPIMAMI Ghana',
     description: 'On-demand shopping and delivery platform from major Ghanaian malls.',
-    url: 'https://mallmart.gh',
+    url: 'https://shopimami.com',
     priceRange: 'GH₵',
     address: {
       '@type': 'PostalAddress',

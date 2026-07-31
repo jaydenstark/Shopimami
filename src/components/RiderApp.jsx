@@ -36,7 +36,7 @@ export default function RiderApp() {
               <Truck size={20} />
             </div>
             <h1 style={{ fontSize: '1.4rem', fontWeight: 900, color: 'white', letterSpacing: '-0.5px' }}>
-              MallMart<span style={{ color: 'var(--accent)' }}>.</span>
+              SHOPIMAMI<span style={{ color: 'var(--accent)' }}>.</span>
             </h1>
           </div>
           <span style={{
@@ -83,7 +83,7 @@ export default function RiderApp() {
         {!isLoaded ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '100px 0', gap: '15px' }}>
             <Activity className="animate-spin" size={40} style={{ color: 'var(--secondary)' }} />
-            <p style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Syncing MallMart database...</p>
+            <p style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Syncing SHOPIMAMI database...</p>
           </div>
         ) : (
           <div className="animate-slide" style={{ maxWidth: '800px', margin: '0 auto' }}>

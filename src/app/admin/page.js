@@ -1,7 +1,7 @@
 import AdminApp from '../../components/AdminApp';
 
 export const metadata = {
-  title: 'MallMart | Admin Performance Dashboard',
+  title: 'SHOPIMAMI | Admin Performance Dashboard',
   description: 'Gross revenue tracking, platform ledger audits, SVG charts, and rosters.',
 };
 
