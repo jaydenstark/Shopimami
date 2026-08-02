@@ -675,7 +675,19 @@ export default function CustomerApp() {
       {/* ── TOP NAV BAR ── */}
       <header className="capp-topbar">
         <div className="capp-topbar-brand">
-          <img src="/logo.png" alt="Shopimami" style={{ height: '32px', width: 'auto', display: 'block' }} />
+          <div style={{
+            width: '32px',
+            height: '32px',
+            background: '#ffffff',
+            borderRadius: '8px',
+            padding: '3px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+          }}>
+            <img src="/logo.png" alt="Shopimami" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          </div>
           <span className="capp-brand-name">SHOPIMAMI<span className="capp-brand-dot">.</span></span>
         </div>
       </header>

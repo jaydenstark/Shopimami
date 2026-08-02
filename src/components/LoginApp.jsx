@@ -96,17 +96,20 @@ export default function LoginApp() {
 
         {/* Brand */}
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-          <img 
-            src="/logo.png" 
-            alt="Shopimami Logo" 
-            style={{ 
-              height: '56px', 
-              width: 'auto', 
-              margin: '0 auto 12px', 
-              display: 'block',
-              filter: 'drop-shadow(0 6px 16px rgba(255,107,0,0.4))'
-            }} 
-          />
+          <div style={{
+            width: '68px',
+            height: '68px',
+            background: '#ffffff',
+            borderRadius: '18px',
+            padding: '8px',
+            margin: '0 auto 14px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 10px 25px rgba(255, 107, 0, 0.4), 0 0 15px rgba(255, 209, 0, 0.2)'
+          }}>
+            <img src="/logo.png" alt="Shopimami Logo" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+          </div>
           <h1 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '1.5rem', fontWeight: 900, color: 'white', letterSpacing: '-0.5px', margin: '0 0 4px' }}>
             SHOPIMAMI<span style={{ color: '#FFD100' }}>.</span>
           </h1>

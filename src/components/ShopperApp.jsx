@@ -46,7 +46,19 @@ export default function ShopperApp() {
       <header className="role-switcher-bar">
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <img src="/logo.png" alt="Shopimami" style={{ height: '32px', width: 'auto', display: 'block' }} />
+            <div style={{
+              width: '32px',
+              height: '32px',
+              background: '#ffffff',
+              borderRadius: '8px',
+              padding: '3px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.2)'
+            }}>
+              <img src="/logo.png" alt="Shopimami" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            </div>
             <h1 style={{ fontSize: '1.4rem', fontWeight: 900, color: 'white', letterSpacing: '-0.5px' }}>
               SHOPIMAMI<span style={{ color: 'var(--accent)' }}>.</span>
             </h1>
