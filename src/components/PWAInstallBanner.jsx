@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Download, X, Share, MoreVertical, PlusSquare, Play, RefreshCw, Check } from 'lucide-react';
+import { Download, X, Share, MoreVertical, PlusSquare, Play } from 'lucide-react';
 
 export default function PWAInstallBanner() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -81,7 +81,7 @@ export default function PWAInstallBanner() {
     if (!showVideoModal) return;
     const interval = setInterval(() => {
       setAnimStep(prev => (prev === 1 ? 2 : 1));
-    }, 3200);
+    }, 3500);
     return () => clearInterval(interval);
   }, [showVideoModal]);
 
@@ -111,8 +111,6 @@ export default function PWAInstallBanner() {
   };
 
   if (!showBanner) return null;
-
-  const isIOS = browserType.startsWith('ios');
 
   return (
     <div style={{
@@ -174,8 +172,8 @@ export default function PWAInstallBanner() {
             whiteSpace: 'nowrap'
           }}
         >
-          {deferredPrompt ? <Download size={12} /> : isIOS ? <Share size={12} /> : <PlusSquare size={12} />}
-          {deferredPrompt ? 'Install' : isIOS ? 'Add to Home' : 'Install App'}
+          {deferredPrompt ? <Download size={12} /> : browserType.startsWith('ios') ? <Share size={12} /> : <PlusSquare size={12} />}
+          {deferredPrompt ? 'Install' : browserType.startsWith('ios') ? 'Add to Home' : 'Install App'}
         </button>
 
         <button
@@ -223,14 +221,15 @@ export default function PWAInstallBanner() {
             flexDirection: 'column',
             alignItems: 'center'
           }}>
-            {/* Modal Header */}
+            {/* Close Button */}
             <button
               onClick={() => setShowVideoModal(false)}
               style={{
                 position: 'absolute', top: '16px', right: '16px',
                 background: 'rgba(255,255,255,0.08)', border: 'none',
                 color: '#94a3b8', borderRadius: '50%', width: '28px', height: '28px',
-                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+                zIndex: 10
               }}
             >
               <X size={16} />
@@ -249,7 +248,7 @@ export default function PWAInstallBanner() {
               </h4>
             </div>
 
-            {/* Platform Selector Tabs */}
+            {/* Platform Tabs */}
             <div style={{
               display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px',
               background: 'rgba(255,255,255,0.06)', borderRadius: '12px', padding: '3px',
@@ -279,154 +278,210 @@ export default function PWAInstallBanner() {
               </button>
             </div>
 
-            {/* Simulated Animated Phone Screen Player */}
+            {/* Simulated Animated Mobile Phone Interface */}
             <div style={{
               width: '100%',
-              height: '210px',
-              background: 'radial-gradient(circle at center, #1E293B 0%, #0F172A 100%)',
-              borderRadius: '16px',
-              border: '1.5px solid rgba(255,255,255,0.12)',
+              height: '240px',
+              background: '#F4F6FB',
+              borderRadius: '20px',
+              border: '2px solid rgba(255,255,255,0.15)',
               position: 'relative',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
-              justifyContent: 'space-between',
-              marginBottom: '16px',
-              boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)'
+              boxShadow: '0 8px 30px rgba(0,0,0,0.5)'
             }}>
-              {/* Phone Status Bar Mock */}
-              <div style={{
-                padding: '6px 14px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                fontSize: '0.62rem',
-                color: 'rgba(255,255,255,0.4)',
-                borderBottom: '1px solid rgba(255,255,255,0.05)'
-              }}>
-                <span>9:41</span>
-                <span>SHOPIMAMI.COM</span>
-                <span>100%</span>
-              </div>
-
-              {/* Phone Content Screen View */}
-              <div style={{
-                flex: 1,
-                padding: '12px',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                position: 'relative'
-              }}>
-                {/* Step 1 Simulation */}
-                {animStep === 1 && (
+              {/* iOS Viewport Mockup */}
+              {activeTab === 'ios' && (
+                <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  {/* Shopimami Custom Mobile Header */}
                   <div style={{
-                    textAlign: 'center',
-                    animation: 'capp-fade-in 0.4s ease-out',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center'
+                    background: 'linear-gradient(90deg, #0A0F16 0%, #1E293B 100%)',
+                    padding: '8px 12px', display: 'flex', alignItems: 'center', gap: '6px',
+                    borderBottom: '1.5px solid #FF6B00'
                   }}>
-                    <div style={{
-                      width: '40px', height: '40px', background: 'rgba(255,107,0,0.15)',
-                      borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      marginBottom: '8px', border: '1px solid rgba(255,107,0,0.4)'
-                    }}>
-                      {activeTab === 'ios' ? <Share size={20} color="#FF6B00" /> : <MoreVertical size={20} color="#FF6B00" />}
+                    <div style={{ width: '18px', height: '18px', background: '#fff', borderRadius: '4px', padding: '2px', display: 'flex', alignItems: 'center' }}>
+                      <img src="/logo.png" style={{ width: '100%', height: '100%', objectFit: 'contain' }} alt="logo" />
                     </div>
-                    <p style={{ margin: 0, fontSize: '0.82rem', fontWeight: 800, color: 'white' }}>
-                      Step 1: Tap {activeTab === 'ios' ? 'Share Icon' : 'Menu Icon'}
-                    </p>
-                    <p style={{ margin: '4px 0 0', fontSize: '0.7rem', color: '#94a3b8' }}>
-                      {activeTab === 'ios' ? 'Located at the bottom of Safari' : 'Located at top-right of Chrome / browser'}
-                    </p>
-
-                    {/* Animated Tap Pointer */}
-                    <div style={{
-                      position: 'absolute',
-                      bottom: activeTab === 'ios' ? '8px' : 'auto',
-                      top: activeTab === 'ios' ? 'auto' : '8px',
-                      right: activeTab === 'ios' ? 'calc(50% - 12px)' : '16px',
-                      width: '24px', height: '24px',
-                      borderRadius: '50%',
-                      background: 'rgba(255, 107, 0, 0.6)',
-                      boxShadow: '0 0 15px #FF6B00',
-                      animation: 'capp-tap-pulse 1.2s infinite'
-                    }} />
+                    <span style={{ fontSize: '0.75rem', fontWeight: 900, color: 'white', letterSpacing: '-0.3px', fontFamily: "'Outfit'" }}>
+                      SHOPIMAMI
+                    </span>
                   </div>
-                )}
 
-                {/* Step 2 Simulation */}
-                {animStep === 2 && (
+                  {/* Shopimami Product Card / Mall Chips Mock Grid */}
+                  <div style={{ flex: 1, padding: '10px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <p style={{ margin: 0, fontSize: '0.62rem', fontWeight: 800, color: '#0a0f16' }}>Choose a Mall</p>
+                    <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '6px 8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '1.1rem' }}>🏬</span>
+                      <div>
+                        <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#0a0f16', display: 'block' }}>Accra Mall</span>
+                        <span style={{ fontSize: '0.52rem', color: '#64748b' }}>📍 Tetteh Quarshie</span>
+                      </div>
+                    </div>
+                    <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '6px 8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '1.1rem' }}>🏬</span>
+                      <div>
+                        <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#0a0f16', display: 'block' }}>West Hills Mall</span>
+                        <span style={{ fontSize: '0.52rem', color: '#64748b' }}>📍 Weija, Accra</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Safari Bottom Browser Bar (Always shows in Safari on iOS) */}
                   <div style={{
-                    width: '100%',
-                    maxWidth: '220px',
-                    background: 'rgba(15, 23, 42, 0.95)',
-                    border: '1px solid rgba(255,107,0,0.5)',
-                    borderRadius: '12px',
-                    padding: '10px 12px',
-                    animation: 'capp-fade-in 0.4s ease-out',
-                    boxShadow: '0 8px 24px rgba(0,0,0,0.5)'
+                    background: '#f8fafc', borderTop: '1px solid #cbd5e1',
+                    padding: '8px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    position: 'relative'
                   }}>
-                    <div style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      background: 'rgba(255,107,0,0.2)',
-                      padding: '8px 10px',
-                      borderRadius: '8px',
-                      border: '1px solid #FF6B00'
-                    }}>
-                      <PlusSquare size={16} color="#FF6B00" />
-                      <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'white' }}>
-                        Add to Home Screen
-                      </span>
-                      <Check size={14} color="#10B981" style={{ marginLeft: 'auto' }} />
+                    <span style={{ fontSize: '0.9rem', color: '#94a3b8' }}>‹</span>
+                    <span style={{ fontSize: '0.9rem', color: '#94a3b8' }}>›</span>
+                    
+                    {/* Pulsing Safari Share Icon Container */}
+                    <div style={{ position: 'relative' }}>
+                      <Share size={18} color="#007AFF" style={{ display: 'block', cursor: 'pointer' }} />
+                      {animStep === 1 && (
+                        <div style={{
+                          position: 'absolute', top: '-12px', left: '-12px',
+                          width: '42px', height: '42px', borderRadius: '50%',
+                          background: 'rgba(255, 107, 0, 0.4)', border: '2.5px solid #FF6B00',
+                          animation: 'capp-tap-pulse 1.2s infinite'
+                        }} />
+                      )}
                     </div>
+                    
+                    <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>📖</span>
+                    <span style={{ fontSize: '0.78rem', color: '#94a3b8' }}>⎕</span>
 
-                    <p style={{ margin: '8px 0 0', fontSize: '0.68rem', color: '#94a3b8', textAlign: 'center' }}>
-                      Step 2: Tap "Add to Home Screen" to install!
-                    </p>
+                    {/* Step 2: Safari Share Action sheet slide-up mockup */}
+                    {animStep === 2 && (
+                      <div style={{
+                        position: 'absolute', bottom: 0, left: 0, right: 0,
+                        background: '#f8fafc', borderTopLeftRadius: '16px', borderTopRightRadius: '16px',
+                        borderTop: '2px solid #cbd5e1', padding: '12px 14px', zIndex: 10,
+                        boxShadow: '0 -6px 20px rgba(0,0,0,0.15)',
+                        animation: 'capp-sheet-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards'
+                      }}>
+                        <div style={{
+                          display: 'flex', alignItems: 'center', gap: '10px',
+                          background: '#ffffff', padding: '8px 12px', borderRadius: '10px',
+                          border: '1.5px solid #FF6B00', position: 'relative'
+                        }}>
+                          <PlusSquare size={16} color="#FF6B00" />
+                          <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#1e293b' }}>
+                            Add to Home Screen
+                          </span>
+                          <div style={{
+                            position: 'absolute', top: '-10px', left: 'calc(50% - 15px)',
+                            width: '30px', height: '30px', borderRadius: '50%',
+                            background: 'rgba(255, 107, 0, 0.5)', border: '2px solid #FF6B00',
+                            animation: 'capp-tap-pulse 1.2s infinite'
+                          }} />
+                        </div>
+                        <p style={{ margin: '8px 0 0', fontSize: '0.62rem', color: '#64748b', textAlign: 'center', fontWeight: 600 }}>
+                          Tap "Add to Home Screen" to install
+                        </p>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-
-              {/* Progress Step Indicator */}
-              <div style={{
-                padding: '8px 14px',
-                background: 'rgba(0,0,0,0.4)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                fontSize: '0.68rem',
-                color: 'rgba(255,255,255,0.6)'
-              }}>
-                <div style={{ display: 'flex', gap: '4px' }}>
-                  <span style={{
-                    width: '18px', height: '4px', borderRadius: '2px',
-                    background: animStep === 1 ? '#FF6B00' : 'rgba(255,255,255,0.2)',
-                    transition: 'all 0.3s'
-                  }} />
-                  <span style={{
-                    width: '18px', height: '4px', borderRadius: '2px',
-                    background: animStep === 2 ? '#FF6B00' : 'rgba(255,255,255,0.2)',
-                    transition: 'all 0.3s'
-                  }} />
                 </div>
-                <button
-                  onClick={() => setAnimStep(prev => (prev === 1 ? 2 : 1))}
-                  style={{
-                    background: 'none', border: 'none', color: '#FF6B00',
-                    fontSize: '0.68rem', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px'
-                  }}
-                >
-                  <RefreshCw size={10} /> Replay
-                </button>
-              </div>
+              )}
+
+              {/* Android / Chrome Viewport Mockup */}
+              {activeTab === 'android' && (
+                <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  {/* Chrome top address bar with 3 dots menu */}
+                  <div style={{
+                    background: '#ffffff', borderBottom: '1px solid #e2e8f0',
+                    padding: '8px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    position: 'relative'
+                  }}>
+                    <span style={{ color: '#64748b', fontSize: '0.7rem', fontWeight: 600 }}>shopimami.com/customer</span>
+                    
+                    {/* Pulsing Android Chrome Menu Icon */}
+                    <div style={{ position: 'relative' }}>
+                      <MoreVertical size={16} color="#475569" />
+                      {animStep === 1 && (
+                        <div style={{
+                          position: 'absolute', top: '-12px', left: '-12px',
+                          width: '40px', height: '40px', borderRadius: '50%',
+                          background: 'rgba(255, 107, 0, 0.4)', border: '2.5px solid #FF6B00',
+                          animation: 'capp-tap-pulse 1.2s infinite'
+                        }} />
+                      )}
+                    </div>
+
+                    {/* Step 2: Chrome Dropdown menu mockup */}
+                    {animStep === 2 && (
+                      <div style={{
+                        position: 'absolute', top: '38px', right: '8px',
+                        background: '#ffffff', border: '1.5px solid #FF6B00',
+                        borderRadius: '10px', padding: '6px', width: '150px', zIndex: 10,
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+                        animation: 'capp-fade-in 0.3s ease-out'
+                      }}>
+                        <div style={{
+                          padding: '6px 8px', borderRadius: '6px', background: 'rgba(255,107,0,0.15)',
+                          display: 'flex', alignItems: 'center', gap: '6px', position: 'relative'
+                        }}>
+                          <PlusSquare size={13} color="#FF6B00" />
+                          <span style={{ fontSize: '0.68rem', fontWeight: 800, color: '#1e293b' }}>
+                            Install app
+                          </span>
+                          <div style={{
+                            position: 'absolute', top: '-6px', left: 'calc(50% - 15px)',
+                            width: '26px', height: '26px', borderRadius: '50%',
+                            background: 'rgba(255, 107, 0, 0.5)', border: '2.5px solid #FF6B00',
+                            animation: 'capp-tap-pulse 1.2s infinite'
+                          }} />
+                        </div>
+                        <div style={{ height: '1px', background: '#f1f5f9', margin: '4px 0' }} />
+                        <span style={{ fontSize: '0.62rem', color: '#94a3b8', padding: '0 8px', display: 'block' }}>
+                          Add to Home Screen
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Shopimami Brand Body Area */}
+                  <div style={{ flex: 1, padding: '10px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    {/* Mini Shopimami Header */}
+                    <div style={{
+                      background: 'linear-gradient(90deg, #0A0F16 0%, #1E293B 100%)',
+                      padding: '8px 12px', display: 'flex', alignItems: 'center', gap: '6px',
+                      borderRadius: '8px'
+                    }}>
+                      <div style={{ width: '14px', height: '14px', background: '#fff', borderRadius: '3px', padding: '1px', display: 'flex', alignItems: 'center' }}>
+                        <img src="/logo.png" style={{ width: '100%', height: '100%', objectFit: 'contain' }} alt="logo" />
+                      </div>
+                      <span style={{ fontSize: '0.65rem', fontWeight: 900, color: 'white', letterSpacing: '-0.3px' }}>
+                        SHOPIMAMI
+                      </span>
+                    </div>
+
+                    {/* Mall chips grid preview */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px' }}>
+                      <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '6px', textAlign: 'center' }}>
+                        <span style={{ fontSize: '0.9rem', display: 'block' }}>🏬</span>
+                        <span style={{ fontSize: '0.55rem', fontWeight: 800, color: '#0a0f16' }}>Accra Mall</span>
+                      </div>
+                      <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '6px', textAlign: 'center' }}>
+                        <span style={{ fontSize: '0.9rem', display: 'block' }}>🏬</span>
+                        <span style={{ fontSize: '0.55rem', fontWeight: 800, color: '#0a0f16' }}>A&C Mall</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Mock Android Bottom Navigation */}
+                  <div style={{ height: '36px', background: '#0A0F16', display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
+                    <span style={{ color: '#fff', fontSize: '0.78rem' }}>🛍️</span>
+                    <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.78rem' }}>🛒</span>
+                    <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.78rem' }}>📍</span>
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Text Steps Summary */}
+            {/* Step Label Summary info below player */}
             <div style={{
               width: '100%',
               background: 'rgba(255,255,255,0.04)',
@@ -438,15 +493,13 @@ export default function PWAInstallBanner() {
               color: '#cbd5e1',
               marginBottom: '16px'
             }}>
-              {activeTab === 'ios' ? (
+              {animStep === 1 ? (
                 <>
-                  <strong>1.</strong> Tap Safari Share button <Share size={12} style={{ verticalAlign: 'middle', color: '#FF6B00' }} /> at bottom.<br />
-                  <strong>2.</strong> Tap <strong>"Add to Home Screen" ➕</strong>.
+                  <strong>Step 1:</strong> Tap the highlighted {activeTab === 'ios' ? 'Share button' : 'Menu button'} in your browser bar.
                 </>
               ) : (
                 <>
-                  <strong>1.</strong> Tap Chrome Menu <MoreVertical size={12} style={{ verticalAlign: 'middle', color: '#FF6B00' }} /> in top right.<br />
-                  <strong>2.</strong> Tap <strong>"Install app"</strong> or <strong>"Add to Home screen" ➕</strong>.
+                  <strong>Step 2:</strong> Tap <strong>"Add to Home Screen" ➕</strong> or <strong>"Install app"</strong> to launch.
                 </>
               )}
             </div>
@@ -472,9 +525,13 @@ export default function PWAInstallBanner() {
 
           <style>{`
             @keyframes capp-tap-pulse {
-              0% { transform: scale(0.8); opacity: 0.4; }
-              50% { transform: scale(1.3); opacity: 0.9; }
-              100% { transform: scale(0.8); opacity: 0.4; }
+              0% { transform: scale(0.7); opacity: 0.3; }
+              50% { transform: scale(1.2); opacity: 0.8; }
+              100% { transform: scale(0.7); opacity: 0.3; }
+            }
+            @keyframes capp-sheet-up {
+              from { transform: translateY(100%); }
+              to { transform: translateY(0); }
             }
           `}</style>
         </div>
