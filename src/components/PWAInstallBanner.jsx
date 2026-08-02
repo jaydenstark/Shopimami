@@ -1,13 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Download, X, Share, MoreVertical, Menu, PlusSquare } from 'lucide-react';
+import { Download, X, Share, MoreVertical, PlusSquare, Play, RefreshCw, Check } from 'lucide-react';
 
 export default function PWAInstallBanner() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [browserType, setBrowserType] = useState('unknown'); // 'ios-safari' | 'ios-other' | 'android-chrome' | 'android-samsung' | 'android-firefox' | 'other'
+  const [browserType, setBrowserType] = useState('unknown'); 
   const [showBanner, setShowBanner] = useState(false);
-  const [showHelpModal, setShowHelpModal] = useState(false);
+  const [showVideoModal, setShowVideoModal] = useState(false);
+  const [activeTab, setActiveTab] = useState('ios'); // 'ios' | 'android'
+  const [animStep, setAnimStep] = useState(1); // 1 | 2
 
   useEffect(() => {
     // 1. Register Service Worker
@@ -51,7 +53,7 @@ export default function PWAInstallBanner() {
       detected = 'android-chrome';
     }
 
-    // 5. Listen for Android / Chrome native prompt
+    // 5. Listen for Android / Chrome install prompt
     const handleBeforeInstallPrompt = (e) => {
       e.preventDefault();
       setDeferredPrompt(e);
@@ -60,11 +62,11 @@ export default function PWAInstallBanner() {
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
-    // Show banner on mobile/tablet devices
     const isMobile = isIOS || isAndroid || /mobile/.test(ua);
     if (isMobile) {
       requestAnimationFrame(() => {
         setBrowserType(detected);
+        setActiveTab(isIOS ? 'ios' : 'android');
         setShowBanner(true);
       });
     }
@@ -74,8 +76,16 @@ export default function PWAInstallBanner() {
     };
   }, []);
 
+  // Loop step animation in tutorial modal
+  useEffect(() => {
+    if (!showVideoModal) return;
+    const interval = setInterval(() => {
+      setAnimStep(prev => (prev === 1 ? 2 : 1));
+    }, 3200);
+    return () => clearInterval(interval);
+  }, [showVideoModal]);
+
   const handleInstallClick = async () => {
-    // If native browser prompt is available, trigger 1-tap install
     if (deferredPrompt) {
       try {
         deferredPrompt.prompt();
@@ -87,17 +97,16 @@ export default function PWAInstallBanner() {
         setShowBanner(false);
         return;
       } catch (err) {
-        console.log('Native prompt failed, opening help modal:', err);
+        console.log('Native prompt failed, opening video modal:', err);
       }
     }
 
-    // Otherwise, show universal browser step-by-step instructions modal
-    setShowHelpModal(true);
+    setShowVideoModal(true);
   };
 
   const handleDismiss = () => {
     setShowBanner(false);
-    setShowHelpModal(false);
+    setShowVideoModal(false);
     localStorage.setItem('shopimami_pwa_dismissed', Date.now().toString());
   };
 
@@ -186,14 +195,14 @@ export default function PWAInstallBanner() {
         </button>
       </div>
 
-      {/* Universal Browser Installation Instructions Modal */}
-      {showHelpModal && (
+      {/* Animated Video Tutorial Modal */}
+      {showVideoModal && (
         <div style={{
           position: 'fixed',
           top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(0,0,0,0.8)',
-          backdropFilter: 'blur(10px)',
-          WebkitBackdropFilter: 'blur(10px)',
+          background: 'rgba(0,0,0,0.85)',
+          backdropFilter: 'blur(12px)',
+          WebkitBackdropFilter: 'blur(12px)',
           zIndex: 99999,
           display: 'flex',
           alignItems: 'center',
@@ -204,119 +213,270 @@ export default function PWAInstallBanner() {
             background: '#0A0F16',
             border: '1px solid rgba(255,107,0,0.4)',
             borderRadius: '24px',
-            padding: '24px',
-            maxWidth: '340px',
+            padding: '20px',
+            maxWidth: '360px',
             width: '100%',
-            textAlign: 'center',
             color: 'white',
-            boxShadow: '0 20px 50px rgba(0,0,0,0.6)'
+            boxShadow: '0 25px 60px rgba(0,0,0,0.7)',
+            position: 'relative',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
           }}>
-            <div style={{
-              width: '52px', height: '52px', background: '#ffffff', borderRadius: '14px',
-              margin: '0 auto 14px', padding: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-              boxShadow: '0 8px 20px rgba(255,107,0,0.3)'
-            }}>
-              <img src="/icon-192x192.png" alt="Shopimami" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            {/* Modal Header */}
+            <button
+              onClick={() => setShowVideoModal(false)}
+              style={{
+                position: 'absolute', top: '16px', right: '16px',
+                background: 'rgba(255,255,255,0.08)', border: 'none',
+                color: '#94a3b8', borderRadius: '50%', width: '28px', height: '28px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer'
+              }}
+            >
+              <X size={16} />
+            </button>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+              <div style={{
+                background: 'rgba(255,107,0,0.2)', border: '1px solid rgba(255,107,0,0.4)',
+                borderRadius: '8px', padding: '4px 8px', display: 'flex', alignItems: 'center', gap: '4px',
+                fontSize: '0.7rem', fontWeight: 800, color: '#FF6B00'
+              }}>
+                <Play size={10} fill="#FF6B00" /> VIDEO GUIDE
+              </div>
+              <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 900, fontFamily: "'Outfit', sans-serif" }}>
+                Add to Home Screen
+              </h4>
             </div>
 
-            <h4 style={{ margin: '0 0 6px', fontSize: '1.1rem', fontWeight: 900, fontFamily: "'Outfit', sans-serif" }}>
-              Add to Home Screen
-            </h4>
-            <p style={{ fontSize: '0.75rem', color: '#94a3b8', margin: '0 0 18px', fontWeight: 500 }}>
-              Follow these simple steps for your browser:
-            </p>
-
-            {/* Steps based on browser */}
+            {/* Platform Selector Tabs */}
             <div style={{
+              display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px',
+              background: 'rgba(255,255,255,0.06)', borderRadius: '12px', padding: '3px',
+              width: '100%', marginBottom: '16px'
+            }}>
+              <button
+                onClick={() => { setActiveTab('ios'); setAnimStep(1); }}
+                style={{
+                  background: activeTab === 'ios' ? 'linear-gradient(135deg, #FF6B00, #FF8C00)' : 'transparent',
+                  color: activeTab === 'ios' ? 'white' : '#94a3b8',
+                  border: 'none', borderRadius: '10px', padding: '7px', fontSize: '0.78rem',
+                  fontWeight: 800, cursor: 'pointer', transition: 'all 0.2s'
+                }}
+              >
+                 iPhone / iPad
+              </button>
+              <button
+                onClick={() => { setActiveTab('android'); setAnimStep(1); }}
+                style={{
+                  background: activeTab === 'android' ? 'linear-gradient(135deg, #FF6B00, #FF8C00)' : 'transparent',
+                  color: activeTab === 'android' ? 'white' : '#94a3b8',
+                  border: 'none', borderRadius: '10px', padding: '7px', fontSize: '0.78rem',
+                  fontWeight: 800, cursor: 'pointer', transition: 'all 0.2s'
+                }}
+              >
+                🤖 Android / Chrome
+              </button>
+            </div>
+
+            {/* Simulated Animated Phone Screen Player */}
+            <div style={{
+              width: '100%',
+              height: '210px',
+              background: 'radial-gradient(circle at center, #1E293B 0%, #0F172A 100%)',
+              borderRadius: '16px',
+              border: '1.5px solid rgba(255,255,255,0.12)',
+              position: 'relative',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              marginBottom: '16px',
+              boxShadow: 'inset 0 0 20px rgba(0,0,0,0.5)'
+            }}>
+              {/* Phone Status Bar Mock */}
+              <div style={{
+                padding: '6px 14px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                fontSize: '0.62rem',
+                color: 'rgba(255,255,255,0.4)',
+                borderBottom: '1px solid rgba(255,255,255,0.05)'
+              }}>
+                <span>9:41</span>
+                <span>SHOPIMAMI.COM</span>
+                <span>100%</span>
+              </div>
+
+              {/* Phone Content Screen View */}
+              <div style={{
+                flex: 1,
+                padding: '12px',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                position: 'relative'
+              }}>
+                {/* Step 1 Simulation */}
+                {animStep === 1 && (
+                  <div style={{
+                    textAlign: 'center',
+                    animation: 'capp-fade-in 0.4s ease-out',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center'
+                  }}>
+                    <div style={{
+                      width: '40px', height: '40px', background: 'rgba(255,107,0,0.15)',
+                      borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      marginBottom: '8px', border: '1px solid rgba(255,107,0,0.4)'
+                    }}>
+                      {activeTab === 'ios' ? <Share size={20} color="#FF6B00" /> : <MoreVertical size={20} color="#FF6B00" />}
+                    </div>
+                    <p style={{ margin: 0, fontSize: '0.82rem', fontWeight: 800, color: 'white' }}>
+                      Step 1: Tap {activeTab === 'ios' ? 'Share Icon' : 'Menu Icon'}
+                    </p>
+                    <p style={{ margin: '4px 0 0', fontSize: '0.7rem', color: '#94a3b8' }}>
+                      {activeTab === 'ios' ? 'Located at the bottom of Safari' : 'Located at top-right of Chrome / browser'}
+                    </p>
+
+                    {/* Animated Tap Pointer */}
+                    <div style={{
+                      position: 'absolute',
+                      bottom: activeTab === 'ios' ? '8px' : 'auto',
+                      top: activeTab === 'ios' ? 'auto' : '8px',
+                      right: activeTab === 'ios' ? 'calc(50% - 12px)' : '16px',
+                      width: '24px', height: '24px',
+                      borderRadius: '50%',
+                      background: 'rgba(255, 107, 0, 0.6)',
+                      boxShadow: '0 0 15px #FF6B00',
+                      animation: 'capp-tap-pulse 1.2s infinite'
+                    }} />
+                  </div>
+                )}
+
+                {/* Step 2 Simulation */}
+                {animStep === 2 && (
+                  <div style={{
+                    width: '100%',
+                    maxWidth: '220px',
+                    background: 'rgba(15, 23, 42, 0.95)',
+                    border: '1px solid rgba(255,107,0,0.5)',
+                    borderRadius: '12px',
+                    padding: '10px 12px',
+                    animation: 'capp-fade-in 0.4s ease-out',
+                    boxShadow: '0 8px 24px rgba(0,0,0,0.5)'
+                  }}>
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      background: 'rgba(255,107,0,0.2)',
+                      padding: '8px 10px',
+                      borderRadius: '8px',
+                      border: '1px solid #FF6B00'
+                    }}>
+                      <PlusSquare size={16} color="#FF6B00" />
+                      <span style={{ fontSize: '0.78rem', fontWeight: 800, color: 'white' }}>
+                        Add to Home Screen
+                      </span>
+                      <Check size={14} color="#10B981" style={{ marginLeft: 'auto' }} />
+                    </div>
+
+                    <p style={{ margin: '8px 0 0', fontSize: '0.68rem', color: '#94a3b8', textAlign: 'center' }}>
+                      Step 2: Tap "Add to Home Screen" to install!
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Progress Step Indicator */}
+              <div style={{
+                padding: '8px 14px',
+                background: 'rgba(0,0,0,0.4)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                fontSize: '0.68rem',
+                color: 'rgba(255,255,255,0.6)'
+              }}>
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <span style={{
+                    width: '18px', height: '4px', borderRadius: '2px',
+                    background: animStep === 1 ? '#FF6B00' : 'rgba(255,255,255,0.2)',
+                    transition: 'all 0.3s'
+                  }} />
+                  <span style={{
+                    width: '18px', height: '4px', borderRadius: '2px',
+                    background: animStep === 2 ? '#FF6B00' : 'rgba(255,255,255,0.2)',
+                    transition: 'all 0.3s'
+                  }} />
+                </div>
+                <button
+                  onClick={() => setAnimStep(prev => (prev === 1 ? 2 : 1))}
+                  style={{
+                    background: 'none', border: 'none', color: '#FF6B00',
+                    fontSize: '0.68rem', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px'
+                  }}
+                >
+                  <RefreshCw size={10} /> Replay
+                </button>
+              </div>
+            </div>
+
+            {/* Text Steps Summary */}
+            <div style={{
+              width: '100%',
               background: 'rgba(255,255,255,0.04)',
               border: '1px solid rgba(255,255,255,0.08)',
-              borderRadius: '16px',
-              padding: '16px',
-              textAlign: 'left',
-              marginBottom: '20px',
-              fontSize: '0.82rem',
-              lineHeight: '1.6',
-              color: '#cbd5e1'
+              borderRadius: '14px',
+              padding: '12px 14px',
+              fontSize: '0.78rem',
+              lineHeight: '1.5',
+              color: '#cbd5e1',
+              marginBottom: '16px'
             }}>
-              {browserType === 'ios-safari' && (
+              {activeTab === 'ios' ? (
                 <>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', color: '#ffffff', fontWeight: 700 }}>
-                    <Share size={16} color="#FF6B00" /> <span>iOS Safari:</span>
-                  </div>
-                  1. Tap Safari's <strong>Share</strong> button <Share size={13} style={{ verticalAlign: 'middle', color: '#3b82f6' }} /> at the bottom.<br />
-                  2. Scroll down & select <strong>"Add to Home Screen" ➕</strong>.
+                  <strong>1.</strong> Tap Safari Share button <Share size={12} style={{ verticalAlign: 'middle', color: '#FF6B00' }} /> at bottom.<br />
+                  <strong>2.</strong> Tap <strong>"Add to Home Screen" ➕</strong>.
                 </>
-              )}
-
-              {browserType === 'ios-other' && (
+              ) : (
                 <>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', color: '#ffffff', fontWeight: 700 }}>
-                    <Share size={16} color="#FF6B00" /> <span>iOS Chrome / Edge / Firefox:</span>
-                  </div>
-                  1. Tap the <strong>Share</strong> icon <Share size={13} style={{ verticalAlign: 'middle', color: '#3b82f6' }} /> or Menu <strong>···</strong>.<br />
-                  2. Select <strong>"Add to Home Screen" ➕</strong>.
-                </>
-              )}
-
-              {browserType === 'android-chrome' && (
-                <>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', color: '#ffffff', fontWeight: 700 }}>
-                    <MoreVertical size={16} color="#FF6B00" /> <span>Android Chrome:</span>
-                  </div>
-                  1. Tap the <strong>Three Dots Menu ⋮</strong> in top right.<br />
-                  2. Tap <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.
-                </>
-              )}
-
-              {browserType === 'android-samsung' && (
-                <>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', color: '#ffffff', fontWeight: 700 }}>
-                    <Menu size={16} color="#FF6B00" /> <span>Samsung Internet:</span>
-                  </div>
-                  1. Tap the <strong>Menu ≡</strong> in bottom right.<br />
-                  2. Tap <strong>"+ Add page to"</strong> → select <strong>"Home screen"</strong>.
-                </>
-              )}
-
-              {browserType === 'android-firefox' && (
-                <>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', color: '#ffffff', fontWeight: 700 }}>
-                    <MoreVertical size={16} color="#FF6B00" /> <span>Firefox Android:</span>
-                  </div>
-                  1. Tap the <strong>Menu ⋮</strong> next to address bar.<br />
-                  2. Select <strong>"Install"</strong> / <strong>"Add to Home screen"</strong>.
-                </>
-              )}
-
-              {(browserType === 'other' || !['ios-safari', 'ios-other', 'android-chrome', 'android-samsung', 'android-firefox'].includes(browserType)) && (
-                <>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', color: '#ffffff', fontWeight: 700 }}>
-                    <PlusSquare size={16} color="#FF6B00" /> <span>Universal Instructions:</span>
-                  </div>
-                  1. Open your browser's <strong>Menu</strong> (top right or bottom bar).<br />
-                  2. Tap <strong>"Install app"</strong> or <strong>"Add to Home Screen" ➕</strong>.
+                  <strong>1.</strong> Tap Chrome Menu <MoreVertical size={12} style={{ verticalAlign: 'middle', color: '#FF6B00' }} /> in top right.<br />
+                  <strong>2.</strong> Tap <strong>"Install app"</strong> or <strong>"Add to Home screen" ➕</strong>.
                 </>
               )}
             </div>
 
             <button
-              onClick={() => setShowHelpModal(false)}
+              onClick={() => setShowVideoModal(false)}
               style={{
                 background: 'linear-gradient(135deg, #FF6B00, #FF8C00)',
                 color: 'white',
                 border: 'none',
                 borderRadius: '14px',
-                padding: '12px 20px',
-                fontSize: '0.875rem',
+                padding: '12px',
+                fontSize: '0.85rem',
                 fontWeight: 800,
                 cursor: 'pointer',
                 width: '100%',
                 boxShadow: '0 4px 14px rgba(255,107,0,0.35)'
               }}
             >
-              Got it!
+              Got It, Install Now!
             </button>
           </div>
+
+          <style>{`
+            @keyframes capp-tap-pulse {
+              0% { transform: scale(0.8); opacity: 0.4; }
+              50% { transform: scale(1.3); opacity: 0.9; }
+              100% { transform: scale(0.8); opacity: 0.4; }
+            }
+          `}</style>
         </div>
       )}
     </div>
