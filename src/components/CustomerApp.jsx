@@ -675,7 +675,7 @@ export default function CustomerApp() {
       {/* ── TOP NAV BAR ── */}
       <header className="capp-topbar">
         <div className="capp-topbar-brand">
-          <div className="capp-brand-icon">🛒</div>
+          <img src="/logo.png" alt="Shopimami" style={{ height: '32px', width: 'auto', display: 'block' }} />
           <span className="capp-brand-name">SHOPIMAMI<span className="capp-brand-dot">.</span></span>
         </div>
       </header>
