@@ -1,11 +1,18 @@
 import './globals.css';
 import { GoogleAnalytics } from '@next/third-parties/google';
+import PWAInstallBanner from '../components/PWAInstallBanner';
 
 export const metadata = {
   metadataBase: new URL('https://shopimami.com'),
   title: 'SHOPIMAMI | On-Demand Mall Shopping & Delivery Platform',
   description: 'Shop items from Accra Mall, West Hills Mall, and A&C Mall. Paid up front by Mobile Money, bought in-person by our Shoppers, and delivered by Dispatch Riders.',
   keywords: 'shopimami, online shopping ghana, accra mall online, west hills mall online, mtn momo shopping, buy groceries accra, dispatch delivery',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'SHOPIMAMI',
+  },
   openGraph: {
     title: 'SHOPIMAMI | On-Demand Mall Shopping & Delivery',
     description: 'Shop items from top physical malls in Ghana and get them delivered to your doorstep in real time.',
@@ -33,8 +40,8 @@ export const metadata = {
     follow: true,
   },
   icons: {
-    icon: '/logo.png',
-    apple: '/logo.png',
+    icon: '/icon-192x192.png',
+    apple: '/apple-touch-icon.png',
   },
 };
 
@@ -56,6 +63,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
+        <meta name="theme-color" content="#0A0F16" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -65,10 +73,10 @@ export default function RootLayout({ children }) {
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
       </head>
       <body>
+        <PWAInstallBanner />
         {children}
         <GoogleAnalytics gaId="G-4TD08NQ7DF" />
       </body>
     </html>
   );
 }
-
