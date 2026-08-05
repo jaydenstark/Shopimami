@@ -10,18 +10,25 @@ export function useMallMart() {
 
   useEffect(() => {
     let intervalId;
+    let isMounted = true;
 
     const fetchOrders = async () => {
       try {
         const res = await fetch('/api/orders');
         if (!res.ok) throw new Error("Failed to fetch orders from API");
         const data = await res.json();
+        if (!isMounted) return;
         setOrders(data);
         setIsFirebase(true);
         setIsLoaded(true);
       } catch (err) {
+        if (!isMounted) return;
         console.warn("Postgres API unavailable, falling back to LocalStorage:", err);
         initializeLocalStorage();
+        if (intervalId) {
+          clearInterval(intervalId);
+          intervalId = null;
+        }
       }
     };
 
@@ -46,10 +53,11 @@ export function useMallMart() {
 
     fetchOrders();
 
-    // Start 3-second short polling for real-time operational dashboard updates
+    // Start 3-second short polling if database connection is functional
     intervalId = setInterval(fetchOrders, 3000);
 
     return () => {
+      isMounted = false;
       if (intervalId) clearInterval(intervalId);
     };
   }, []);
