@@ -1,11 +1,11 @@
 import CustomerApp from '../../components/CustomerApp';
 
 export const metadata = {
-  title: 'SHOPIMAMI | Shop Accra Malls & Get It Delivered',
-  description: 'Shop from Accra Mall, West Hills Mall & A&C Mall. Pay by MoMo, picked in-person by our Shoppers, delivered to your door.',
+  title: 'SHOPIMAMI | Online Mall Shopping, Shoprite & Melcom Delivery',
+  description: 'Get groceries, electronics, and fashion delivered from Shoprite, Melcom, and Game Store. Pay via MTN MoMo, Telecel Cash, or AirtelTigo.',
   openGraph: {
-    title: 'SHOPIMAMI | Shop Accra Malls & Get It Delivered',
-    description: 'Shop from Accra Mall, West Hills Mall & A&C Mall. Pay by MoMo, picked in-person by our Shoppers, delivered to your door.',
+    title: 'SHOPIMAMI | Online Mall Shopping, Shoprite & Melcom Delivery',
+    description: 'Get groceries, electronics, and fashion delivered from Shoprite, Melcom, and Game Store. Pay via MTN MoMo, Telecel Cash, or AirtelTigo.',
     url: 'https://shopimami.com/customer',
     images: [
       {
@@ -18,8 +18,8 @@ export const metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'SHOPIMAMI | Shop Accra Malls & Get It Delivered',
-    description: 'Shop from Accra Mall, West Hills Mall & A&C Mall. Pay by MoMo, picked in-person by our Shoppers, delivered to your door.',
+    title: 'SHOPIMAMI | Online Mall Shopping, Shoprite & Melcom Delivery',
+    description: 'Get groceries, electronics, and fashion delivered from Shoprite, Melcom, and Game Store. Pay via MTN MoMo, Telecel Cash, or AirtelTigo.',
     images: ['/og-image.jpg'],
   },
 };

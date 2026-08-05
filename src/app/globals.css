@@ -1143,6 +1143,8 @@ ul {
   font-weight: 900;
   color: white;
   letter-spacing: -0.5px;
+  margin: 0;
+  padding: 0;
 }
 
 .capp-brand-dot {

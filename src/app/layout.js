@@ -4,9 +4,9 @@ import PWAInstallBanner from '../components/PWAInstallBanner';
 
 export const metadata = {
   metadataBase: new URL('https://shopimami.com'),
-  title: 'SHOPIMAMI | On-Demand Mall Shopping & Delivery Platform',
-  description: 'Shop items from Accra Mall, West Hills Mall, and A&C Mall. Paid up front by Mobile Money, bought in-person by our Shoppers, and delivered by Dispatch Riders.',
-  keywords: 'shopimami, online shopping ghana, accra mall online, west hills mall online, mtn momo shopping, buy groceries accra, dispatch delivery',
+  title: 'SHOPIMAMI | Online Grocery & Mall Delivery Accra',
+  description: 'Order online from Shoprite, Melcom, Game Store, and Palace Mall. Secure Mobile Money checkout & 45-minute doorstep delivery across Accra.',
+  keywords: 'shopimami, grocery delivery accra, shoprite online delivery ghana, melcom online shopping accra, buy groceries online ghana, palace mall online shopping, momo online shopping ghana, accra mall delivery service, west hills mall online shopping, dispatch rider delivery accra',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
