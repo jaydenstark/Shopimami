@@ -2557,8 +2557,8 @@ ul {
   to   { opacity: 1; transform: translateX(-50%) translateY(0); }
 }
 
-/* ── DESKTOP: cap at 480px centered ── */
-@media (min-width: 481px) {
+/* ── DESKTOP: cap at 480px centered on medium viewports ── */
+@media (min-width: 481px) and (max-width: 767px) {
   .capp-root {
     border-left: 1px solid #e2e8f0;
     border-right: 1px solid #e2e8f0;
@@ -2570,6 +2570,120 @@ ul {
   .capp-root {
     max-width: 100%;
     box-shadow: none;
+  }
+}
+
+/* Desktop navigation in header (hidden by default on mobile) */
+.capp-desktop-nav {
+  display: none;
+  align-items: center;
+  gap: 16px;
+}
+
+.capp-desktop-nav-item {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.65);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.capp-desktop-nav-item:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.capp-desktop-nav-item.active {
+  color: var(--secondary);
+  background: rgba(255, 107, 0, 0.12);
+}
+
+.capp-desktop-nav-badge {
+  background: var(--accent);
+  color: #0A0F16;
+  font-size: 0.65rem;
+  font-weight: 900;
+  padding: 2px 6px;
+  border-radius: 20px;
+  position: absolute;
+  top: -4px;
+  right: -4px;
+}
+
+/* ── RESPONSIVE WIDESCREEN DESKTOP (PC) ── */
+@media (min-width: 768px) {
+  .capp-root {
+    max-width: 100% !important;
+    box-shadow: none;
+    background: #FAFBFD;
+  }
+
+  /* Hide bottom nav */
+  .capp-bottom-nav {
+    display: none !important;
+  }
+
+  /* Show top nav links */
+  .capp-desktop-nav {
+    display: flex;
+  }
+
+  /* Centered and padded content */
+  .capp-main {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 24px 20px 40px !important;
+  }
+
+  /* Malls: 3 columns grid instead of vertical list */
+  .capp-mall-chips {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 16px;
+  }
+
+  /* Store Cards: 3 columns */
+  .capp-store-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 16px !important;
+  }
+
+  /* Product Cards: 4 columns */
+  .capp-product-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 16px !important;
+  }
+
+  /* Cart Layout side-by-side */
+  .capp-cart-content-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 24px;
+    align-items: start;
+  }
+
+  /* Tracking Dashboard Layout side-by-side */
+  .capp-track-result {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 24px;
+    align-items: start;
+  }
+
+  .capp-track-main-info {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
   }
 }
 

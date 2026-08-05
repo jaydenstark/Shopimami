@@ -444,7 +444,7 @@ export default function CustomerApp() {
           </button>
         </div>
       ) : checkoutStep === 'cart' ? (
-        <>
+        <div className="capp-cart-content-wrapper">
           {/* Cart Items */}
           <div className="capp-cart-items">
             {cart.map(item => (
@@ -463,18 +463,20 @@ export default function CustomerApp() {
             ))}
           </div>
 
-          {/* Price Summary */}
-          <div className="capp-price-summary">
-            <div className="capp-price-row"><span>Items subtotal</span><span>GH₵ {cartSubtotal.toFixed(2)}</span></div>
-            <div className="capp-price-row"><span>Delivery fee</span><span>GH₵ {deliveryFee.toFixed(2)}</span></div>
-            <div className="capp-price-row"><span>Service charge</span><span>GH₵ {serviceFee.toFixed(2)}</span></div>
-            <div className="capp-price-row total"><span>Total</span><span>GH₵ {cartTotal.toFixed(2)}</span></div>
-          </div>
+          {/* Cart Sidebar */}
+          <div className="capp-cart-sidebar">
+            <div className="capp-price-summary">
+              <div className="capp-price-row"><span>Items subtotal</span><span>GH₵ {cartSubtotal.toFixed(2)}</span></div>
+              <div className="capp-price-row"><span>Delivery fee</span><span>GH₵ {deliveryFee.toFixed(2)}</span></div>
+              <div className="capp-price-row"><span>Service charge</span><span>GH₵ {serviceFee.toFixed(2)}</span></div>
+              <div className="capp-price-row total"><span>Total</span><span>GH₵ {cartTotal.toFixed(2)}</span></div>
+            </div>
 
-          <button onClick={() => setCheckoutStep('form')} className="capp-checkout-btn">
-            Proceed to Checkout · GH₵ {cartTotal.toFixed(2)}
-          </button>
-        </>
+            <button onClick={() => setCheckoutStep('form')} className="capp-checkout-btn">
+              Proceed to Checkout · GH₵ {cartTotal.toFixed(2)}
+            </button>
+          </div>
+        </div>
       ) : (
         /* Checkout Form */
         <div className="capp-checkout-form-wrap">
@@ -581,88 +583,93 @@ export default function CustomerApp() {
         {/* Order found */}
         {trackedOrder && (
           <div className="capp-track-result">
-            {/* Order header card */}
-            <div className="capp-track-card">
-              <div className="capp-track-card-row">
-                <div>
-                  <p className="capp-track-meta-label">ORDER ID</p>
-                  <p className="capp-track-meta-val">{trackedOrder.id}</p>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <p className="capp-track-meta-label">TOTAL</p>
-                  <p className="capp-track-meta-val orange">GH₵ {trackedOrder.total.toFixed(2)}</p>
-                </div>
-              </div>
-              <div className="capp-track-card-row" style={{ marginTop: '10px' }}>
-                <div>
-                  <p className="capp-track-meta-label">STORE</p>
-                  <p className="capp-track-meta-small">{trackedOrder.storeName} · {trackedOrder.mallName}</p>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <p className="capp-track-meta-label">CUSTOMER</p>
-                  <p className="capp-track-meta-small">{trackedOrder.customerName}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Flag alert */}
-            {trackedOrder.flagged && (
-              <div className="capp-flag-alert">
-                <AlertTriangle size={16} />
-                <p><strong>Flagged by Supervisor:</strong> {trackedOrder.flagNote || 'Order under review.'}</p>
-              </div>
-            )}
-
-            {/* Progress stepper */}
-            <div className="capp-stepper">
-              {STAGES.map((stage, i) => {
-                const isComplete = i < stageIdx;
-                const isActive   = i === stageIdx;
-                return (
-                  <div key={stage.key} className={`capp-step ${isComplete ? 'done' : ''} ${isActive ? 'active' : ''}`}>
-                    <div className="capp-step-dot">
-                      {isComplete ? <Check size={13} /> : <span>{stage.icon}</span>}
-                    </div>
-                    {i < STAGES.length - 1 && (
-                      <div className={`capp-step-line ${isComplete ? 'done' : ''}`} />
-                    )}
-                    <p className="capp-step-label">{stage.label}</p>
+            {/* Left Column: Progress details */}
+            <div className="capp-track-main-info">
+              {/* Order header card */}
+              <div className="capp-track-card">
+                <div className="capp-track-card-row">
+                  <div>
+                    <p className="capp-track-meta-label">ORDER ID</p>
+                    <p className="capp-track-meta-val">{trackedOrder.id}</p>
                   </div>
-                );
-              })}
-            </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <p className="capp-track-meta-label">TOTAL</p>
+                    <p className="capp-track-meta-val orange">GH₵ {trackedOrder.total.toFixed(2)}</p>
+                  </div>
+                </div>
+                <div className="capp-track-card-row" style={{ marginTop: '10px' }}>
+                  <div>
+                    <p className="capp-track-meta-label">STORE</p>
+                    <p className="capp-track-meta-small">{trackedOrder.storeName} · {trackedOrder.mallName}</p>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <p className="capp-track-meta-label">CUSTOMER</p>
+                    <p className="capp-track-meta-small">{trackedOrder.customerName}</p>
+                  </div>
+                </div>
+              </div>
 
-            {/* Chat feed */}
-            <div className="capp-chat-feed">
-              <p className="capp-chat-label">⚡ Live Updates</p>
-              <div className="capp-chat-messages">
-                {chatMsgs.map((msg, i) => (
-                  <div key={i} className={`capp-chat-msg ${msg.from === 'system' ? 'system' : 'staff'}`}>
-                    {msg.from !== 'system' && (
-                      <div className="capp-chat-avatar">{(msg.name || 'S')[0]}</div>
-                    )}
-                    <div className="capp-chat-bubble">
-                      {msg.from !== 'system' && <p className="capp-chat-sender">{msg.name}</p>}
-                      <p className="capp-chat-text">{msg.msg}</p>
-                      <p className="capp-chat-time">{msg.time}</p>
+              {/* Flag alert */}
+              {trackedOrder.flagged && (
+                <div className="capp-flag-alert">
+                  <AlertTriangle size={16} />
+                  <p><strong>Flagged by Supervisor:</strong> {trackedOrder.flagNote || 'Order under review.'}</p>
+                </div>
+              )}
+
+              {/* Progress stepper */}
+              <div className="capp-stepper">
+                {STAGES.map((stage, i) => {
+                  const isComplete = i < stageIdx;
+                  const isActive   = i === stageIdx;
+                  return (
+                    <div key={stage.key} className={`capp-step ${isComplete ? 'done' : ''} ${isActive ? 'active' : ''}`}>
+                      <div className="capp-step-dot">
+                        {isComplete ? <Check size={13} /> : <span>{stage.icon}</span>}
+                      </div>
+                      {i < STAGES.length - 1 && (
+                        <div className={`capp-step-line ${isComplete ? 'done' : ''}`} />
+                      )}
+                      <p className="capp-step-label">{stage.label}</p>
                     </div>
+                  );
+                })}
+              </div>
+
+              {/* Items receipt */}
+              <div className="capp-receipt">
+                <p className="capp-receipt-title">Items Ordered</p>
+                {trackedOrder.items.map((item, i) => (
+                  <div key={i} className="capp-receipt-row">
+                    <span className={`capp-receipt-dot ${item.picked ? 'picked' : ''}`}>
+                      {item.picked ? '✓' : '○'}
+                    </span>
+                    <span className="capp-receipt-item-name">{item.name} ×{item.quantity}</span>
+                    <span className="capp-receipt-item-price">GH₵ {(item.price * item.quantity).toFixed(2)}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Items receipt */}
-            <div className="capp-receipt">
-              <p className="capp-receipt-title">Items Ordered</p>
-              {trackedOrder.items.map((item, i) => (
-                <div key={i} className="capp-receipt-row">
-                  <span className={`capp-receipt-dot ${item.picked ? 'picked' : ''}`}>
-                    {item.picked ? '✓' : '○'}
-                  </span>
-                  <span className="capp-receipt-item-name">{item.name} ×{item.quantity}</span>
-                  <span className="capp-receipt-item-price">GH₵ {(item.price * item.quantity).toFixed(2)}</span>
+            {/* Right Column: Chat feed */}
+            <div className="capp-track-sidebar-info">
+              <div className="capp-chat-feed">
+                <p className="capp-chat-label">⚡ Live Updates</p>
+                <div className="capp-chat-messages">
+                  {chatMsgs.map((msg, i) => (
+                    <div key={i} className={`capp-chat-msg ${msg.from === 'system' ? 'system' : 'staff'}`}>
+                      {msg.from !== 'system' && (
+                        <div className="capp-chat-avatar">{(msg.name || 'S')[0]}</div>
+                      )}
+                      <div className="capp-chat-bubble">
+                        {msg.from !== 'system' && <p className="capp-chat-sender">{msg.name}</p>}
+                        <p className="capp-chat-text">{msg.msg}</p>
+                        <p className="capp-chat-time">{msg.time}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
             </div>
           </div>
         )}
@@ -689,6 +696,25 @@ export default function CustomerApp() {
             <img src="/logo.png" alt="Shopimami" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           </div>
           <h1 className="capp-brand-name">SHOPIMAMI<span className="capp-brand-dot">.</span></h1>
+        </div>
+
+        {/* Desktop Navigation */}
+        <div className="capp-desktop-nav">
+          {[
+            { id: 'shop',  icon: '🛍️', label: 'Shop'  },
+            { id: 'cart',  icon: '🛒', label: 'Cart', badge: cartCount },
+            { id: 'track', icon: '📍', label: 'Track' },
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`capp-desktop-nav-item ${activeTab === tab.id ? 'active' : ''}`}
+            >
+              <span className="capp-desktop-nav-icon">{tab.icon}</span>
+              <span className="capp-desktop-nav-label">{tab.label}</span>
+              {tab.badge > 0 && <span className="capp-desktop-nav-badge">{tab.badge}</span>}
+            </button>
+          ))}
         </div>
       </header>
 
