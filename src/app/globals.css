@@ -1116,15 +1116,16 @@ ul {
 
 /* ── TOP BAR ── */
 .capp-topbar {
-  background: linear-gradient(90deg, #0A0F16 0%, #1E293B 100%);
+  background: #ffffff;
   padding: 12px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2px solid var(--secondary);
+  border-bottom: 1.5px solid #e2e8f0;
   position: sticky;
   top: 0;
   z-index: 100;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.02);
 }
 
 .capp-topbar-brand {
@@ -1139,16 +1140,21 @@ ul {
 
 .capp-brand-name {
   font-family: 'Outfit', sans-serif;
-  font-size: 1.3rem;
-  font-weight: 900;
-  color: white;
+  font-size: 1.35rem;
+  font-weight: 800;
   letter-spacing: -0.5px;
   margin: 0;
   padding: 0;
+  display: flex;
+  align-items: center;
 }
 
-.capp-brand-dot {
-  color: var(--accent);
+.capp-brand-shopi {
+  color: #0A1128;
+}
+
+.capp-brand-mami {
+  color: #FF6B00;
 }
 
 .capp-topbar-home {
@@ -2583,7 +2589,7 @@ ul {
 .capp-desktop-nav-item {
   background: none;
   border: none;
-  color: rgba(255, 255, 255, 0.65);
+  color: #475569;
   font-family: 'Inter', sans-serif;
   font-size: 0.85rem;
   font-weight: 700;
@@ -2598,13 +2604,13 @@ ul {
 }
 
 .capp-desktop-nav-item:hover {
-  color: white;
-  background: rgba(255, 255, 255, 0.08);
+  color: #0A1128;
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .capp-desktop-nav-item.active {
-  color: var(--secondary);
-  background: rgba(255, 107, 0, 0.12);
+  color: #FF6B00;
+  background: rgba(255, 107, 0, 0.08);
 }
 
 .capp-desktop-nav-badge {

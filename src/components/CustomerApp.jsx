@@ -695,7 +695,10 @@ export default function CustomerApp() {
           }}>
             <img src="/logo.png" alt="Shopimami" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
           </div>
-          <h1 className="capp-brand-name">SHOPIMAMI<span className="capp-brand-dot">.</span></h1>
+          <h1 className="capp-brand-name">
+            <span className="capp-brand-shopi">Shopi</span>
+            <span className="capp-brand-mami">mami</span>
+          </h1>
         </div>
 
         {/* Desktop Navigation */}
