@@ -286,7 +286,21 @@ export default function CustomerApp() {
                 className="capp-mall-chip"
                 onClick={() => { setSelectedMall(mall); setCart([]); }}
               >
-                <span className="capp-mall-chip-icon">🏬</span>
+                <div style={{
+                  width: '42px',
+                  height: '42px',
+                  background: '#ffffff',
+                  borderRadius: '10px',
+                  padding: '3px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '1.5px solid #e2e8f0',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.03)',
+                  flexShrink: 0
+                }}>
+                  <img src={mall.logo} alt={mall.name} style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: '6px' }} />
+                </div>
                 <span className="capp-mall-chip-name">{mall.name}</span>
                 <span className="capp-mall-chip-loc">
                   <MapPin size={10} /> {mall.location.split(',')[0]}
@@ -338,8 +352,18 @@ export default function CustomerApp() {
                   className="capp-store-card"
                   onClick={() => setSelectedStore(store)}
                 >
-                  <div className="capp-store-avatar" style={{ background: `linear-gradient(135deg, ${meta.color}22, ${meta.color}44)`, border: `1.5px solid ${meta.color}33` }}>
-                    <span className="capp-store-emoji">{meta.emoji}</span>
+                  <div className="capp-store-avatar" style={{
+                    background: '#ffffff',
+                    border: '1.5px solid #e2e8f0',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '8px',
+                    position: 'relative',
+                    overflow: 'visible',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.02)'
+                  }}>
+                    <img src={store.logo} alt={store.name} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                     <div className="capp-store-badge" style={{ background: meta.color }}>{meta.tag}</div>
                   </div>
                   <p className="capp-store-name">{store.name}</p>

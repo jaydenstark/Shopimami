@@ -1,24 +1,24 @@
 export const malls = [
-  { id: 'accra_mall', name: 'Accra Mall', location: 'Tetteh Quarshie Interchange, Accra' },
-  { id: 'west_hills', name: 'West Hills Mall', location: 'Kasoa Road, Weija, Accra' },
-  { id: 'ac_mall', name: 'A&C Mall', location: 'Jungle Road, East Legon, Accra' }
+  { id: 'accra_mall', name: 'Accra Mall', location: 'Tetteh Quarshie Interchange, Accra', logo: '/logos/accra_mall.jpg' },
+  { id: 'west_hills', name: 'West Hills Mall', location: 'Kasoa Road, Weija, Accra', logo: '/logos/west_hills.jpg' },
+  { id: 'ac_mall', name: 'A&C Mall', location: 'Jungle Road, East Legon, Accra', logo: '/logos/ac_mall.jpg' }
 ];
 
 export const stores = {
   accra_mall: [
-    { id: 'shoprite_accra', name: 'Shoprite' },
-    { id: 'game_accra', name: 'Game' },
-    { id: 'palace_accra', name: 'Palace Store' }
+    { id: 'shoprite_accra', name: 'Shoprite', logo: '/logos/shoprite.jpg' },
+    { id: 'game_accra', name: 'Game', logo: '/logos/game.jpg' },
+    { id: 'palace_accra', name: 'Palace Store', logo: '/logos/palace.jpg' }
   ],
   west_hills: [
-    { id: 'melcom_west', name: 'Melcom' },
-    { id: 'palace_west', name: 'Palace Store' },
-    { id: 'shoprite_west', name: 'Shoprite' }
+    { id: 'melcom_west', name: 'Melcom', logo: '/logos/melcom.jpg' },
+    { id: 'palace_west', name: 'Palace Store', logo: '/logos/palace.jpg' },
+    { id: 'shoprite_west', name: 'Shoprite', logo: '/logos/shoprite.jpg' }
   ],
   ac_mall: [
-    { id: 'melcom_ac', name: 'Melcom' },
-    { id: 'game_ac', name: 'Game' },
-    { id: 'shoprite_ac', name: 'Shoprite' }
+    { id: 'melcom_ac', name: 'Melcom', logo: '/logos/melcom.jpg' },
+    { id: 'game_ac', name: 'Game', logo: '/logos/game.jpg' },
+    { id: 'shoprite_ac', name: 'Shoprite', logo: '/logos/shoprite.jpg' }
   ]
 };
 
